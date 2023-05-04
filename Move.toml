@@ -4,7 +4,8 @@ version = "0.0.0"
 #published-at = ""
 
 [dependencies]
-Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "testnet" }
+Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "cab7e9762d4d75126a78fdd009b405745657fe57" }
+NftProtocol = { git = "https://github.com/Origin-Byte/nft-protocol.git", rev = "debb8a35da784d05bcc12cc7561eb5a97d7a6142" }
 
 [addresses]
 sui_nft_box = "0x0"

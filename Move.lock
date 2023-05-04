@@ -4,17 +4,73 @@
 version = 0
 
 dependencies = [
+  { name = "NftProtocol" },
+  { name = "Sui" },
+]
+
+[[move.package]]
+name = "Allowlist"
+source = { git = "https://github.com/Origin-Byte/nft-protocol.git", rev = "debb8a35da784d05bcc12cc7561eb5a97d7a6142", subdir = "contracts/allowlist" }
+
+dependencies = [
+  { name = "Sui" },
+]
+
+[[move.package]]
+name = "Authlist"
+source = { git = "https://github.com/Origin-Byte/nft-protocol.git", rev = "debb8a35da784d05bcc12cc7561eb5a97d7a6142", subdir = "contracts/authlist" }
+
+dependencies = [
   { name = "Sui" },
 ]
 
 [[move.package]]
 name = "MoveStdlib"
-source = { git = "https://github.com/MystenLabs/sui.git", rev = "testnet", subdir = "crates/sui-framework/packages/move-stdlib" }
+source = { git = "https://github.com/MystenLabs/sui.git", rev = "cab7e9762d4d75126a78fdd009b405745657fe57", subdir = "crates/sui-framework/packages/move-stdlib" }
+
+[[move.package]]
+name = "NftProtocol"
+source = { git = "https://github.com/Origin-Byte/nft-protocol.git", rev = "debb8a35da784d05bcc12cc7561eb5a97d7a6142", subdir = "" }
+
+dependencies = [
+  { name = "Allowlist" },
+  { name = "Authlist" },
+  { name = "Originmate" },
+  { name = "Request" },
+  { name = "Sui" },
+  { name = "Witness" },
+]
+
+[[move.package]]
+name = "Originmate"
+source = { git = "https://github.com/Origin-Byte/originmate.git", rev = "c43b53f5d8b519e86d4a64ad0cf6787a7528b01b", subdir = "" }
+
+dependencies = [
+  { name = "Sui" },
+]
+
+[[move.package]]
+name = "Request"
+source = { git = "https://github.com/Origin-Byte/nft-protocol.git", rev = "debb8a35da784d05bcc12cc7561eb5a97d7a6142", subdir = "contracts/request" }
+
+dependencies = [
+  { name = "Originmate" },
+  { name = "Sui" },
+  { name = "Witness" },
+]
 
 [[move.package]]
 name = "Sui"
-source = { git = "https://github.com/MystenLabs/sui.git", rev = "testnet", subdir = "crates/sui-framework/packages/sui-framework" }
+source = { git = "https://github.com/MystenLabs/sui.git", rev = "cab7e9762d4d75126a78fdd009b405745657fe57", subdir = "crates/sui-framework/packages/sui-framework" }
 
 dependencies = [
   { name = "MoveStdlib" },
+]
+
+[[move.package]]
+name = "Witness"
+source = { git = "https://github.com/Origin-Byte/nft-protocol.git", rev = "debb8a35da784d05bcc12cc7561eb5a97d7a6142", subdir = "contracts/witness" }
+
+dependencies = [
+  { name = "Sui" },
 ]

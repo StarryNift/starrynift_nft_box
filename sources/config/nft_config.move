@@ -5,7 +5,7 @@ module sui_nft_box::nft_config {
     use sui::event;
     use sui::object::{Self, UID, ID, uid_to_inner, uid_as_inner};
     use sui::transfer;
-    use sui::tx_context::{Self, TxContext};
+    use sui::tx_context::TxContext;
     use sui::url::{Self, Url};
     use sui_nft_box::admin::{Contract, assert_admin};
 
@@ -44,33 +44,6 @@ module sui_nft_box::nft_config {
         attributes: Attributes,
     }
 
-    /// Avatar NFT for mint
-    struct AvatarNFT has key, store {
-        id: UID,
-        name: String,
-        description: String,
-        img_url: Url,
-        attributes: Avatar,
-    }
-
-    /// Space NFT for mint
-    struct SpaceNFT has key, store {
-        id: UID,
-        name: String,
-        description: String,
-        img_url: Url,
-        attributes: Space,
-    }
-
-    /// Coupon NFT for mint
-    struct CouponNFT has key {
-        id: UID,
-        name: String,
-        description: String,
-        img_url: Url,
-        attributes: Coupon,
-    }
-
     // =================== Event =================
 
     struct CreateNFTConfigEvent has copy, drop {
@@ -83,6 +56,10 @@ module sui_nft_box::nft_config {
 
     // =================== Function =================
 
+    public fun get_nft_id(nft_config: &NFTConfig): &ID {
+        uid_as_inner(&nft_config.id)
+    }
+
     public fun get_nft_name(nft_config: &NFTConfig): String {
         nft_config.name
     }
@@ -91,61 +68,24 @@ module sui_nft_box::nft_config {
         nft_config.description
     }
 
-    public fun get_nft_id(nft_config: &NFTConfig): &ID {
-        uid_as_inner(&nft_config.id)
-    }
-
-    public fun get_nft_img(nft_config: &NFTConfig): Url {
+    public fun get_nft_img_url(nft_config: &NFTConfig): Url {
         nft_config.img_url
     }
 
-    public fun get_coupon_amount(coupon: &CouponNFT): u64 {
-        coupon.attributes.amount
+    public fun get_nft_can_mint(nft_config: &NFTConfig): bool {
+        nft_config.can_mint
     }
 
-    // public fun burn_coupon(coupon: &CouponNFT) {
-    //     object::delete(coupon.id);
-    // }
+    public fun get_nft_avatar_attributes(nft_config: &NFTConfig): &Option<Avatar> {
+        &nft_config.attributes.avatar
+    }
 
-    /// Mint NFT to user
-    public fun mint_nft(nft_config: &NFTConfig, ctx: &mut TxContext) {
-        if (option::is_some(&nft_config.attributes.avatar) && nft_config.can_mint) {
-            let avatar = option::borrow(&nft_config.attributes.avatar);
+    public fun get_nft_space_attributes(nft_config: &NFTConfig): &Option<Space> {
+        &nft_config.attributes.space
+    }
 
-            let avatar_nft = AvatarNFT {
-                id: object::new(ctx),
-                name: nft_config.name,
-                description: nft_config.description,
-                img_url: nft_config.img_url,
-                attributes: *avatar
-            };
-
-            transfer::transfer(avatar_nft, tx_context::sender(ctx));
-        } else if (option::is_some(&nft_config.attributes.space) && nft_config.can_mint) {
-            let space = option::borrow(&nft_config.attributes.space);
-
-            let space_nft = SpaceNFT {
-                id: object::new(ctx),
-                name: nft_config.name,
-                description: nft_config.description,
-                img_url: nft_config.img_url,
-                attributes: *space
-            };
-
-            transfer::transfer(space_nft, tx_context::sender(ctx));
-        } else if (option::is_some(&nft_config.attributes.coupon) && nft_config.can_mint) {
-            let coupon = option::borrow(&nft_config.attributes.coupon);
-
-            let coupon_nft = CouponNFT {
-                id: object::new(ctx),
-                name: nft_config.name,
-                description: nft_config.description,
-                img_url: nft_config.img_url,
-                attributes: *coupon
-            };
-
-            transfer::transfer(coupon_nft, tx_context::sender(ctx));
-        };
+    public fun get_nft_coupon_attributes(nft_config: &NFTConfig): &Option<Coupon> {
+        &nft_config.attributes.coupon
     }
 
     /// Create avatar NFT config
