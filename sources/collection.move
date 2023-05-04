@@ -1,17 +1,17 @@
-module sui_nft_box::collection {
+module starrynift_nft_box::collection {
     use std::string;
 
     use nft_protocol::collection::{Self, Collection};
     use nft_protocol::display_info;
     use nft_protocol::mint_cap::{Self, MintCap};
-    use witness::witness;
+    use ob_permissions::witness;
 
+    use starrynift_nft_box::box_nft::{MysteryBox, AvatarNFT, SpaceNFT, CouponNFT};
     use sui::display;
     use sui::object;
     use sui::package;
     use sui::transfer;
     use sui::tx_context::{Self, TxContext};
-    use sui_nft_box::box_nft::{MysteryBox, AvatarNFT, SpaceNFT, CouponNFT};
 
     // =================== Struct =================
     /// One time witness is only instantiated in the init method

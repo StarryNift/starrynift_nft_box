@@ -1,11 +1,16 @@
-module sui_nft_box::box_nft {
+module starrynift_nft_box::box_nft {
     use std::option;
     use std::string::String;
 
     use nft_protocol::mint_cap::{Self, MintCap};
     use nft_protocol::mint_event;
-    use witness::witness;
+    use ob_permissions::witness;
 
+    use starrynift_nft_box::admin::{Contract, get_receiver, assert_not_freeze, get_signer_public_key};
+    use starrynift_nft_box::box_config::{BoxConfig, assert_box_same_phase, assert_can_open_box, get_box_name, get_box_description, get_box_img_url, get_box_price, assert_nonce_used};
+    use starrynift_nft_box::ecdsa::{assert_mint_signature_valid, assert_open_box_signature_valid};
+    use starrynift_nft_box::nft_config::{NFTConfig, get_nft_id, Avatar, Space, Coupon, get_nft_avatar_attributes, get_nft_can_mint, get_nft_name, get_nft_description, get_nft_img_url, get_nft_space_attributes, get_nft_coupon_attributes};
+    use starrynift_nft_box::phase_config::{Phase, assert_phase_in_progress, get_current_phase, get_phase_config, assert_can_public_mint};
     use sui::clock::Clock;
     use sui::coin::{Self, Coin};
     use sui::event;
@@ -14,11 +19,6 @@ module sui_nft_box::box_nft {
     use sui::transfer;
     use sui::tx_context::{Self, TxContext};
     use sui::url::Url;
-    use sui_nft_box::admin::{Contract, get_receiver, assert_not_freeze, get_signer_public_key};
-    use sui_nft_box::box_config::{BoxConfig, assert_box_same_phase, assert_can_open_box, get_box_name, get_box_description, get_box_img_url, get_box_price, assert_nonce_used};
-    use sui_nft_box::ecdsa::{assert_mint_signature_valid, assert_open_box_signature_valid};
-    use sui_nft_box::nft_config::{NFTConfig, get_nft_id, Avatar, Space, Coupon, get_nft_avatar_attributes, get_nft_can_mint, get_nft_name, get_nft_description, get_nft_img_url, get_nft_space_attributes, get_nft_coupon_attributes};
-    use sui_nft_box::phase_config::{Phase, assert_phase_in_progress, get_current_phase, get_phase_config, assert_can_public_mint};
 
     // =================== Error =================
 

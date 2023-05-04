@@ -1,13 +1,13 @@
-module sui_nft_box::nft_config {
+module starrynift_nft_box::nft_config {
     use std::option::{Self, Option};
     use std::string::{String, bytes};
 
+    use starrynift_nft_box::admin::{Contract, assert_admin};
     use sui::event;
     use sui::object::{Self, UID, ID, uid_to_inner, uid_as_inner};
     use sui::transfer;
     use sui::tx_context::TxContext;
     use sui::url::{Self, Url};
-    use sui_nft_box::admin::{Contract, assert_admin};
 
     // =================== Struct =================
 

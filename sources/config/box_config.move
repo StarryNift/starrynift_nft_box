@@ -1,6 +1,7 @@
-module sui_nft_box::box_config {
+module starrynift_nft_box::box_config {
     use std::string::{String, bytes};
 
+    use starrynift_nft_box::admin::{Contract, assert_admin};
     use sui::clock::{Self, Clock};
     use sui::event;
     use sui::object::{Self, UID, ID};
@@ -8,7 +9,6 @@ module sui_nft_box::box_config {
     use sui::tx_context::TxContext;
     use sui::url::{Self, Url};
     use sui::vec_set::{Self, VecSet};
-    use sui_nft_box::admin::{Contract, assert_admin};
 
     // =================== Error =================
 

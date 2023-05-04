@@ -1,4 +1,4 @@
-module sui_nft_box::ecdsa {
+module starrynift_nft_box::ecdsa {
     use std::vector;
 
     use sui::address;
