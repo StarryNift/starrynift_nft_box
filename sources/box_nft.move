@@ -8,8 +8,8 @@ module starrynift_nft_box::box_nft {
     use nft_protocol::mint_event;
     use ob_permissions::witness;
 
-    use starrynift_nft_box::admin::{Contract, get_receiver, assert_not_freeze, get_signer_public_key, assert_admin};
-    use starrynift_nft_box::box_config::{BoxConfig, assert_box_same_phase, assert_can_open_box, get_box_name, get_box_description, get_box_img_url, get_box_price, assert_nonce_used, get_user_claim_record, remove_coupon_claim_record, add_coupon_claim_record};
+    use starrynift_nft_box::admin::{Contract, get_receiver, assert_not_freeze, get_signer_public_key};
+    use starrynift_nft_box::box_config::{BoxConfig, assert_box_same_phase, assert_can_open_box, get_box_name, get_box_description, get_box_img_url, get_box_price, assert_nonce_used, add_coupon_claim_record, get_box_phase};
     use starrynift_nft_box::ecdsa::{assert_mint_signature_valid, assert_open_box_signature_valid};
     use starrynift_nft_box::nft_config::{NFTConfig, get_nft_id, Avatar, Space, Coupon, get_nft_avatar_attributes, get_nft_can_mint, get_nft_name, get_nft_description, get_nft_img_url, get_nft_space_attributes, get_nft_coupon_attributes, get_nft_coupon_amount};
     use starrynift_nft_box::phase_config::{Phase, assert_phase_in_progress, get_current_phase, get_phase_config, assert_can_public_mint};
@@ -23,6 +23,9 @@ module starrynift_nft_box::box_nft {
     use sui::transfer;
     use sui::tx_context::{Self, TxContext};
     use sui::url::Url;
+
+    const COLLECTION_NAME: vector<u8> = b"AI ANIMO";
+    const COLLECTION_DESCRIPTION: vector<u8> = b"AI ANIMO is an experimental project launched by StarryNift on Sui Mainnet that aims to push the boundaries of NFTs by combining the latest AIGC and Composable 3D technologies.";
 
     // =================== Error =================
 
@@ -83,15 +86,21 @@ module starrynift_nft_box::box_nft {
 
     struct BuyBoxNFTEvent has copy, drop {
         box_id: ID,
-        phase: u8,
+        box_phase: u8,
         buyer: address,
         box_price: u64,
     }
 
     struct OpenBoxNFTEvent has copy, drop {
         box_id: ID,
-        phase: u8,
-        user: address,
+        box_phase: u8,
+        creator: address,
+    }
+
+    struct ClaimCouponEvent has copy, drop {
+        coupon_id: ID,
+        box_phase: u8,
+        claimer: address,
     }
 
     // =================== Function =================
@@ -117,8 +126,8 @@ module starrynift_nft_box::box_nft {
             dw,
             &mut collection,
             display_info::new(
-                string::utf8(b"AI ANIMO"),
-                string::utf8(b"AI ANIMO is an experimental project launched by StarryNift on Sui Mainnet that aims to push the boundaries of NFTs by combining the latest AIGC and Composable 3D technologies."),
+                string::utf8(COLLECTION_NAME),
+                string::utf8(COLLECTION_DESCRIPTION),
             )
         );
 
@@ -242,19 +251,19 @@ module starrynift_nft_box::box_nft {
         };
     }
 
-    public entry fun freemint(
-        template: &NFTConfig,
-        mint_cap_avatar: &mut MintCap<AvatarNFT>,
-        mint_cap_space: &mut MintCap<SpaceNFT>,
-        mint_cap_coupon: &mut MintCap<CouponNFT>,
-        ctx: &mut TxContext
-    ) {
-        mint_nft(
-            template,
-            mint_cap_avatar,
-            mint_cap_space,
-            mint_cap_coupon,
-            ctx
+    fun burn_coupon(coupon: CouponNFT, mint_cap_coupon: &MintCap<CouponNFT>) {
+        let burn_guard = mint_event::start_burn(
+            witness::from_witness(Witness {}),
+            &coupon
+        );
+
+        let CouponNFT { id, name: _, description: _, img_url: _, attributes: _ } = coupon;
+
+        // Burn user minted box
+        mint_event::emit_burn(
+            burn_guard,
+            mint_cap::collection_id(mint_cap_coupon),
+            id
         );
     }
 
@@ -299,7 +308,7 @@ module starrynift_nft_box::box_nft {
         event::emit(
             BuyBoxNFTEvent {
                 box_id: object::uid_to_inner(&box.id),
-                phase: get_current_phase(phase),
+                box_phase: get_current_phase(phase),
                 buyer: sender,
                 box_price: get_box_price(box_config),
             }
@@ -356,7 +365,7 @@ module starrynift_nft_box::box_nft {
         event::emit(
             BuyBoxNFTEvent {
                 box_id: object::uid_to_inner(&box.id),
-                phase: get_current_phase(phase),
+                box_phase: get_current_phase(phase),
                 buyer: sender,
                 box_price: get_box_price(box_config),
             }
@@ -428,8 +437,8 @@ module starrynift_nft_box::box_nft {
         event::emit(
             OpenBoxNFTEvent {
                 box_id: object::uid_to_inner(&mystery_box.id),
-                phase: mystery_box.phase,
-                user: tx_context::sender(ctx),
+                box_phase: mystery_box.phase,
+                creator: tx_context::sender(ctx),
             }
         );
 
@@ -450,66 +459,27 @@ module starrynift_nft_box::box_nft {
         box_info.opened = box_info.opened + 1;
     }
 
-    public entry fun claimCoupon(
-        phase: &Phase,
+    public entry fun claim_coupon(
         coupon: CouponNFT,
-        boxConfig: &mut BoxConfig,
+        box_config: &mut BoxConfig,
         mint_cap_coupon: &MintCap<CouponNFT>,
-        ctx: &mut TxContext
-    )
-    {
-        let sender = tx_context::sender(ctx);
-        let amount = get_nft_coupon_amount(&coupon.attributes);
-        let phaseIndex = get_current_phase(phase);
-
-        assert_box_same_phase(phaseIndex, boxConfig);
-
-        // check role
-        add_coupon_claim_record(
-            boxConfig, amount, sender
-        );
-        burn_coupon(coupon, mint_cap_coupon);
-    }
-
-    public fun fundCoupon(
-        phase: &Phase,
-        contract: &Contract,
-        boxConfig: &mut BoxConfig,
-        paid: Coin<SUI>,
-        reciever: address,
         ctx: &mut TxContext
     ) {
         let sender = tx_context::sender(ctx);
-        assert_admin(contract, ctx);
+        let amount = get_nft_coupon_amount(&coupon.attributes);
 
-        let phaseIndex = get_current_phase(phase);
-
-        assert_box_same_phase(phaseIndex, boxConfig);
-
-        let amount = get_user_claim_record(boxConfig, reciever);
-
-        assert!(amount == coin::value(&paid), EINSUFFIENT_PAID);
-
-        // check role
-        remove_coupon_claim_record(
-            boxConfig, sender
-        );
-        transfer::public_transfer(paid, reciever);
-    }
-
-    public entry fun burn_coupon(coupon: CouponNFT, mint_cap_coupon: &MintCap<CouponNFT>) {
-        let burn_guard = mint_event::start_burn(
-            witness::from_witness(Witness {}),
-            &coupon
+        add_coupon_claim_record(
+            box_config, sender, amount
         );
 
-        let CouponNFT { id, name: _, description: _, img_url: _, attributes: _ } = coupon;
-
-        // Burn user minted box
-        mint_event::emit_burn(
-            burn_guard,
-            mint_cap::collection_id(mint_cap_coupon),
-            id
+        event::emit(
+            ClaimCouponEvent {
+                coupon_id: object::uid_to_inner(&coupon.id),
+                box_phase: get_box_phase(box_config),
+                claimer: tx_context::sender(ctx),
+            }
         );
+
+        burn_coupon(coupon, mint_cap_coupon);
     }
 }
