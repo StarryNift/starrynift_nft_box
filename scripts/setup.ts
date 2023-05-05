@@ -29,7 +29,7 @@ interface PackageInfo {
 const packageId = process.env.PACKAGE_ID || "";
 const contractId = process.env.CONTRACT_ID || "";
 const phaseId = process.env.PHASE_ID || "";
-const currentPhase = 2
+const currentPhase = 1
 
 async function set_contract_owner(contract: string, new_owner: string) {
   try {
@@ -468,8 +468,9 @@ async function fetchDeployInfo(digest: string) {
 	const spaceMintCap = objectChanges.find((item:any) => item.type === 'created' && /0x[0-9a-fA-F]+::mint_cap::MintCap<0x[0-9a-fA-F]+::box_nft::SpaceNFT>/.test(item.objectType)).objectId
 	const couponMintCap = objectChanges.find((item:any) => item.type === 'created' && /0x[0-9a-fA-F]+::mint_cap::MintCap<0x[0-9a-fA-F]+::box_nft::CouponNFT>/.test(item.objectType)).objectId
 	const mysteryBoxCap = objectChanges.find((item:any) => item.type === 'created' && /0x[0-9a-fA-F]+::mint_cap::MintCap<0x[0-9a-fA-F]+::box_nft::MysteryBox>/.test(item.objectType)).objectId
+	const boxInfoId = objectChanges.find((item:any) => item.type === 'created' && /0x[0-9a-fA-F]+::box_nft::BoxInfo/.test(item.objectType)).objectId
 
-console.log(`
+	console.log(`
 PACKAGE_ID=${packageId}
 COLLECTION_ID=${collectionId}
 CONTRACT_ID=${contractId}
@@ -479,6 +480,7 @@ AVATAR_MINT_CAP=${avatarMintCap}
 SPACE_MINT_CAP=${spaceMintCap}
 COUPON_MINT_CAP=${couponMintCap}
 MYSTERY_BOX_MINT_CAP=${mysteryBoxCap}
+BOX_INFO_ID=${boxInfoId}
 `)
 }
 
@@ -497,23 +499,23 @@ const queryPhaseConfig = async function () {
 async function main() {
 	const new_owner = await signer.getAddress();
 
-	// await fetchDeployInfo('9evWHNEziVWZzSZgrPghGdkAsjYj1qRCK6EYbf6WzXTi')
-	//
+	await fetchDeployInfo('5MRJmpLeJbh3DdSErCncgv4uMUmCya2hKVfoShMzxieC')
+	// set public key
 	// await set_contract_signer_public_key();
+
+	// set phase info
 	// await add_or_modify_phase_config(currentPhase);
 	// await set_current_phase(currentPhase);
-	//
 
-	// boxid2 digest 9jZ4XrfautyBMYMAJapodT9cQqQSCFm396uy5S3TLc2p
-	// boxid2 boxid  0x3baadf5c7f760e18856019a5bd829cbc5ed40d17a43ecb1cb2e7fae9e2c74604
-	const boxPrice = 1000
-	const boxConfigId = await create_box_config(currentPhase, boxPrice);
-	console.log({ boxConfigId });
 
-	// const metadataList = await add_nft_item();
-	// console.log(metadataList)
-	// const metadataList = await add_nft_item();
-	// console.log(metadataList)
+	// SET box info
+	// const boxPrice = 0
+	// const boxConfigId = await create_box_config(currentPhase, boxPrice);
+	// console.log({ boxConfigId });
+
+	// set metadata
+	const metadataList = await add_nft_item();
+	console.log(metadataList)
 }
 
 main()

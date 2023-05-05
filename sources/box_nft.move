@@ -333,6 +333,7 @@ module starrynift_nft_box::box_nft {
         box_info: &mut BoxInfo,
         clock: &Clock,
         mint_cap_box: &mut MintCap<MysteryBox>,
+        mint_amount: u64,
         paid: Coin<SUI>,
         ctx: &mut TxContext
     ) {
@@ -347,40 +348,46 @@ module starrynift_nft_box::box_nft {
 
         let box_price = get_box_price(box_config);
         let paid_balance = coin::value(&paid);
-        assert!(box_price == paid_balance, EINSUFFIENT_PAID);
+
+        assert!(box_price * mint_amount == paid_balance, EINSUFFIENT_PAID);
+
         // Pay SUI to contract.receiver
         transfer::public_transfer(paid, get_receiver(contract));
 
         // Mint Box NFT to user
         let sender = tx_context::sender(ctx);
 
-        let box = MysteryBox {
-            id: object::new(ctx),
-            name: get_box_name(box_config),
-            description: get_box_description(box_config),
-            phase: current_phase,
-            img_url: get_box_img_url(box_config),
-        };
+        let i = 0;
+        while (i < mint_amount) {
+            let box = MysteryBox {
+                id: object::new(ctx),
+                name: get_box_name(box_config),
+                description: get_box_description(box_config),
+                phase: current_phase,
+                img_url: get_box_img_url(box_config),
+            };
 
-        event::emit(
-            BuyBoxNFTEvent {
-                box_id: object::uid_to_inner(&box.id),
-                box_phase: get_current_phase(phase),
-                buyer: sender,
-                box_price: get_box_price(box_config),
-            }
-        );
+            event::emit(
+                BuyBoxNFTEvent {
+                    box_id: object::uid_to_inner(&box.id),
+                    box_phase: get_current_phase(phase),
+                    buyer: sender,
+                    box_price: get_box_price(box_config),
+                }
+            );
 
-        mint_event::emit_mint(
-            witness::from_witness(Witness {}),
-            mint_cap::collection_id(mint_cap_box),
-            &box
-        );
+            mint_event::emit_mint(
+                witness::from_witness(Witness {}),
+                mint_cap::collection_id(mint_cap_box),
+                &box
+            );
 
-        mint_cap::increment_supply(mint_cap_box, 1);
-        box_info.minted = box_info.minted + 1;
+            mint_cap::increment_supply(mint_cap_box, 1);
+            box_info.minted = box_info.minted + 1;
 
-        transfer::transfer(box, sender);
+            transfer::transfer(box, sender);
+            i = i+1;
+        }
     }
 
     public entry fun open_box(
