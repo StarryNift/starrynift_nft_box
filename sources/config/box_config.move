@@ -5,6 +5,7 @@ module starrynift_nft_box::box_config {
     use sui::clock::{Self, Clock};
     use sui::event;
     use sui::object::{Self, UID, ID};
+    use sui::table::{Self, Table};
     use sui::transfer;
     use sui::tx_context::TxContext;
     use sui::url::{Self, Url};
@@ -27,6 +28,7 @@ module starrynift_nft_box::box_config {
         box_price: u64,
         open_time: u64,
         nonce_used: VecSet<u64>,
+        claimed_coupon: Table<address, u64>,
     }
 
     // =================== Event =================
@@ -125,7 +127,8 @@ module starrynift_nft_box::box_config {
             img_url,
             box_price,
             open_time,
-            nonce_used: vec_set::empty()
+            nonce_used: vec_set::empty(),
+            claimed_coupon: table::new(ctx),
         });
     }
 
@@ -162,5 +165,17 @@ module starrynift_nft_box::box_config {
             box_price,
             open_time,
         });
+    }
+
+    public fun get_user_claim_record(box_config: &BoxConfig, address: address): u64 {
+        *table::borrow(&box_config.claimed_coupon, address)
+    }
+
+    public entry fun add_coupon_claim_record(box_config: &mut BoxConfig, amount: u64, address: address) {
+        table::add(&mut box_config.claimed_coupon, address, amount);
+    }
+
+    public entry fun remove_coupon_claim_record(box_config: &mut BoxConfig, address: address) {
+        table::remove(&mut box_config.claimed_coupon, address);
     }
 }

@@ -9,6 +9,10 @@ module starrynift_nft_box::nft_config {
     use sui::tx_context::TxContext;
     use sui::url::{Self, Url};
 
+    // =================== Error =================
+
+    const EWrongNoCoupon: u64 = 0;
+
     // =================== Struct =================
 
     /// Avatar attribute for config
@@ -86,6 +90,10 @@ module starrynift_nft_box::nft_config {
 
     public fun get_nft_coupon_attributes(nft_config: &NFTConfig): &Option<Coupon> {
         &nft_config.attributes.coupon
+    }
+
+    public fun get_nft_coupon_amount(coupon_nft: &Coupon): u64 {
+        coupon_nft.amount
     }
 
     /// Create avatar NFT config

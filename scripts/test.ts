@@ -1,6 +1,7 @@
 import {
 	Ed25519Keypair,
 	JsonRpcProvider,
+	devnetConnection,
 	RawSigner,
 	TransactionBlock,
 	testnetConnection, DEFAULT_ED25519_DERIVATION_PATH,
@@ -8,6 +9,7 @@ import {
 import { bcs } from './bcsUtil'
 import {BCS} from "@mysten/bcs";
 require("dotenv").config();
+const nftMetadataList: any = require("../consts/Metadata.json");
 
 const MNEMONICS: string = process.env.MNEMONICS || "";
 const provider = new JsonRpcProvider(testnetConnection);
@@ -16,6 +18,8 @@ const keypair_ed25519 = Ed25519Keypair.deriveKeypair(
   DEFAULT_ED25519_DERIVATION_PATH
 );
 const signer = new RawSigner(keypair_ed25519, provider);
+const publicKey = keypair_ed25519.getPublicKey();
+const defaultGasBudget = 0.01 * 10 ** 9
 
 const packageId = process.env.PACKAGE_ID || "";
 const contractId = process.env.CONTRACT_ID || "";

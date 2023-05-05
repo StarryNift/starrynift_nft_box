@@ -5,8 +5,8 @@
   "scripts": {
     "execute:publish": "sui client publish --gas-budget 200000000",
     "execute:setup": "ts-node scripts/setup.ts",
-    "execute:test": "ts-node scripts/test.ts",
-    "execute:upgrade": "sui client upgrade --gas-budget 100000000 --upgrade-capability 0xfa4892f572ed3f244fa99ee1f4e3d894c8581a48b298e0ec35150aff4262de83"
+    "execute:upgrade": "sui client upgrade --gas-budget 100000000 --upgrade-capability 0xfa4892f572ed3f244fa99ee1f4e3d894c8581a48b298e0ec35150aff4262de83",
+    "execute:test": "ts-node scripts/test.ts"
   },
   "dependencies": {
     "@mysten/bcs": "^0.7.1",
