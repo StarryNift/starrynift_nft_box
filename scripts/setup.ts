@@ -186,7 +186,7 @@ async function create_space_nft_config({
         tx.pure(image, "string"),
         // can_mint
         tx.pure(canMint, "bool"),
-        // scene_id TODO
+        // scene_id
         tx.pure(sceneId, "u8"),
       ],
     });
@@ -409,6 +409,7 @@ async function add_nft_item() {
             name,
             description,
             image,
+	          sceneId,
           });
 	        metadataList.push({ name, objectId, category, rarity });
 					console.log(JSON.stringify(metadataList))
@@ -494,10 +495,7 @@ async function main() {
 	// await set_contract_signer_public_key();
 	// await add_or_modify_phase_config();
 	// await set_current_phase(1);
-	//
 
-	// boxid2 digest 9jZ4XrfautyBMYMAJapodT9cQqQSCFm396uy5S3TLc2p
-	// boxid2 boxid  0x3baadf5c7f760e18856019a5bd829cbc5ed40d17a43ecb1cb2e7fae9e2c74604
 	// const boxConfigId = await create_box_config(1);
 	// console.log({ boxConfigId });
 

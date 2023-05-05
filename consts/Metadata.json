@@ -1,24 +1,13 @@
 [
   {
-    "id": "0x8bc8d296e4a1663bb7871b62ad9a46901ba50abe176d376be29513576d570000",
-    "category": 0,
-    "createdAt": "2023-05-01T16:19:09.154Z",
-    "description": "Blank",
-    "name": "Blank",
-    "rarity": "R",
-    "amount": 0,
-    "image": "",
-    "updatedAt": "2023-05-01T16:19:09.154Z"
-  },
-  {
     "id": "0x8bc8d296e4a1663bb7871b62ad9a46901ba50abe176d376be29513576d577d22",
     "category": 3,
     "createdAt": "2023-05-01T12:01:07.745Z",
     "description": "An embedded Sui Token voucher to express the gratitude to the continuous support rendered by StarryNift community.",
-    "name": "500 SUI Voucher",
+    "name": "1000 SUI Voucher",
     "rarity": "UR",
-    "amount": 500,
-    "image": "https://d1uoymq29mtp9f.cloudfront.net/web/img/sui/metadata/3_3_1.jpg",
+    "amount": 1000,
+    "image": "https://d1uoymq29mtp9f.cloudfront.net/web/img/sui/metadata/3_3_1.png",
     "updatedAt": "2023-05-01T12:01:07.745Z"
   },
   {
@@ -26,21 +15,32 @@
     "category": 3,
     "createdAt": "2023-05-01T12:00:27.094Z",
     "description": "An embedded Sui Token voucher to express the gratitude to the continuous support rendered by StarryNift community.",
-    "name": "20 SUI Voucher",
-    "amount": 20,
+    "name": "300 SUI Voucher",
+    "amount": 300,
     "rarity": "SR",
-    "image": "https://d1uoymq29mtp9f.cloudfront.net/web/img/sui/metadata/3_2_1.jpg",
+    "image": "https://d1uoymq29mtp9f.cloudfront.net/web/img/sui/metadata/3_2_1.png",
     "updatedAt": "2023-05-01T12:00:27.094Z"
+  },
+  {
+    "id": "0x8bc8d296e4a1663bb7871b62ad9a46901ba50abe176d376be29513576d570000",
+    "category": 3,
+    "createdAt": "2023-05-01T16:19:09.154Z",
+    "description": "An embedded Sui Token voucher to express the gratitude to the continuous support rendered by StarryNift community.",
+    "name": "25 SUI Voucher",
+    "rarity": "R",
+    "amount": 25,
+    "image": "https://d1uoymq29mtp9f.cloudfront.net/web/img/sui/metadata/3_1_1.png",
+    "updatedAt": "2023-05-01T16:19:09.154Z"
   },
   {
     "id": "0x8bc8d296e4a1663bb7871b62ad9a46901ba50abe176d376be29513576d577d13",
     "category": 2,
-    "sceneId": 20,
+    "sceneId": 22,
     "createdAt": "2023-05-01T11:59:17.127Z",
     "description": "A composable premium 3D Space in Starryverse featuring a visually stunning and immersive environment that incorporates elements of digital technology, futuristic aesthetics, and online social interaction, creating a unique and engaging experience for users.",
     "name": "Premium Cyber Space",
     "rarity": "UR",
-    "image": "https://d1uoymq29mtp9f.cloudfront.net/web/img/sui/metadata/2_2_1.jpg",
+    "image": "https://d1uoymq29mtp9f.cloudfront.net/web/img/sui/metadata/2_2_1.png",
     "updatedAt": "2023-05-01T11:59:17.127Z"
   },
   {
@@ -51,7 +51,7 @@
     "description": " A composable 3D Space in Starryverse featuring breathtaking undersea scene thant transport users to a serene and vibrant underwater world filled with colorful coral reefs, exotic marine life, and stunning oceanic vistas, offering a mesmerizing and immersive experience.",
     "name": "Aqua World Space",
     "rarity": "R",
-    "image": "https://d1uoymq29mtp9f.cloudfront.net/web/img/sui/metadata/2_1_1.jpg",
+    "image": "https://d1uoymq29mtp9f.cloudfront.net/web/img/sui/metadata/2_1_1.png",
     "updatedAt": "2023-05-01T11:57:52.155Z"
   },
   {
@@ -61,7 +61,7 @@
     "description": "A meditation master in the ancient forest, who has deep knowledge of past and present lives and can communicate with the ancient ancestors of the forest through meditation.",
     "name": "Sedated Master Fox",
     "rarity": "UR",
-    "image": "https://d1uoymq29mtp9f.cloudfront.net/web/img/sui/metadata/1_3_1.jpg",
+    "image": "https://d1uoymq29mtp9f.cloudfront.net/web/img/sui/metadata/1_3_1.png",
     "updatedAt": "2023-05-01T11:57:09.359Z"
   },
   {
@@ -70,7 +70,7 @@
     "createdAt": "2023-05-01T11:56:35.120Z",
     "description": "A brave turtle with special abilities to navigate and clear obstacles in the ocean, equipped with high-tech bombs to eliminate any threat to the marine ecosystem, and is respected by people for its courage and wisdom in handling dangerous missions.",
     "name": "Sea Bomb Sweeper",
-    "image": "https://d1uoymq29mtp9f.cloudfront.net/web/img/sui/metadata/1_2_1.jpg",
+    "image": "https://d1uoymq29mtp9f.cloudfront.net/web/img/sui/metadata/1_2_1.png",
     "rarity": "SR",
     "updatedAt": "2023-05-01T11:56:35.120Z"
   },
@@ -81,7 +81,7 @@
     "description": "A creative and passionate musician who loves psychedelic music and has the ability to manipulate the emotions and consciousness of his audience through his music. He produces beautiful dynamic patterns of light that change with the music, creating a mesmerizing visual effect.",
     "name": "Mutated DJ Water Nymph",
     "rarity": "R",
-    "image": "https://d1uoymq29mtp9f.cloudfront.net/web/img/sui/metadata/1_1_1.jpg",
+    "image": "https://d1uoymq29mtp9f.cloudfront.net/web/img/sui/metadata/1_1_1.png",
     "updatedAt": "2023-05-01T11:56:04.726Z"
   },
   {
@@ -91,7 +91,7 @@
     "description": "A skilled martial artist who, after a foreign army invaded his homeland and imprisoned him, developed a unique ability to transform into the powerful warrior god Asura by closing his eyes, using it to defeat the enemy and become the new leader of his tribe.",
     "name": "War God Raccoon",
     "rarity": "UR",
-    "image": "https://d1uoymq29mtp9f.cloudfront.net/web/img/sui/metadata/1_3_2.jpg",
+    "image": "https://d1uoymq29mtp9f.cloudfront.net/web/img/sui/metadata/1_3_2.png",
     "updatedAt": "2023-05-01T11:54:44.934Z"
   },
   {
@@ -100,7 +100,7 @@
     "createdAt": "2023-05-01T11:53:50.738Z",
     "description": "A brave and skilled fighter that ont only protect his own territory in the ocean, but also seeking challenges in other places. They even attempted to challenge various ethnic groups in the ancient forest of God's Parable, but were eventually subdued by War God Raccoon and returned to the sea, assuming the responsibility of safeguarding the peace of the sea.",
     "name": "Cyborg Fighter Goldfish",
-    "image": "https://d1uoymq29mtp9f.cloudfront.net/web/img/sui/metadata/1_2_2.jpg",
+    "image": "https://d1uoymq29mtp9f.cloudfront.net/web/img/sui/metadata/1_2_2.png",
     "rarity": "SR",
     "updatedAt": "2023-05-01T11:53:50.738Z"
   },
@@ -110,7 +110,7 @@
     "createdAt": "2023-05-01T11:52:56.308Z",
     "description": "One of the most popular characters in AI Fairyland, known for her gorgeous unicorn appearance, pink curly hair, and friendly, kind personality. She has won beauty pageants and established her own successful beauty brand, making her a successful entrepreneur and fashion icon.",
     "name": "Comely Elf Unicorn",
-    "image": "https://d1uoymq29mtp9f.cloudfront.net/web/img/sui/metadata/1_1_2.jpg",
+    "image": "https://d1uoymq29mtp9f.cloudfront.net/web/img/sui/metadata/1_1_2.png",
     "rarity": "R",
     "updatedAt": "2023-05-01T11:52:56.308Z"
   },
@@ -121,7 +121,7 @@
     "description": "An exceptionally talented golden monkey who was born in a mysterious cave and raised by a famous monkey king and an excellent monkey doctor. He upholds the values of loyalty, courage, and justice, and sees protecting his tribe as his mission.",
     "name": "Guardian Monkey Warrior",
     "rarity": "UR",
-    "image": "https://d1uoymq29mtp9f.cloudfront.net/web/img/sui/metadata/1_3_1.jpg",
+    "image": "https://d1uoymq29mtp9f.cloudfront.net/web/img/sui/metadata/1_3_1.png",
     "updatedAt": "2023-05-01T11:51:43.479Z"
   },
   {
@@ -131,7 +131,7 @@
     "description": "A powerful but introverted wizard who often uses magic to do good deeds and is misunderstood by others due to his shy nature. He is mentored by Sedated Master Fox who reminds him of the responsibility that comes with great power.",
     "name": "Shy Wizard Kitty",
     "rarity": "SR",
-    "image": "https://d1uoymq29mtp9f.cloudfront.net/web/img/sui/metadata/1_2_1.jpg",
+    "image": "https://d1uoymq29mtp9f.cloudfront.net/web/img/sui/metadata/1_2_1.png",
     "updatedAt": "2023-05-01T11:51:04.202Z"
   },
   {
@@ -141,7 +141,7 @@
     "description": "A magical creature that appears lethargic but has the powerful ability to hypnotize and control the thoughts and behaviors of others through its famous Baby Shark song. However, it often uses its power to help those in need, rather than harm others.",
     "name": "Sleepy Baby Shark",
     "rarity": "R",
-    "image": "https://d1uoymq29mtp9f.cloudfront.net/web/img/sui/metadata/1_1_1.jpg",
+    "image": "https://d1uoymq29mtp9f.cloudfront.net/web/img/sui/metadata/1_1_1.png",
     "updatedAt": "2023-05-01T11:48:30.789Z"
   }
 ]

@@ -1,6 +1,6 @@
 module sui_nft_box::nft_config {
     use std::option::{Self, Option};
-    use std::string::{String, bytes};
+    use std::string::{String, bytes, utf8};
 
     use sui::event;
     use sui::object::{Self, UID, ID, uid_to_inner, uid_as_inner};
@@ -8,6 +8,8 @@ module sui_nft_box::nft_config {
     use sui::tx_context::{Self, TxContext};
     use sui::url::{Self, Url};
     use sui_nft_box::admin::{Contract, assert_admin};
+    use std::string;
+    use std::ascii::string;
 
     // =================== Struct =================
 

@@ -119,6 +119,67 @@ async function test_openbox() {
 	}
 }
 
+async function test_freemint() {
+	try {
+		const tx = new TransactionBlock();
+		const txn = await tx.moveCall({
+			target: `${packageId}::box_nft::freemint`,
+			arguments: [
+				tx.object("0xf67a9cd3076d6ad1330331c8842276e8eef3e1828db2b91088ba0cb8c2b85977"),
+			],
+		});
+
+		const executedTx = await signer.signAndExecuteTransactionBlock({
+			transactionBlock: tx,
+			options: {
+				showInput: true,
+				showEffects: true,
+				showEvents: true,
+				showObjectChanges: true,
+			},
+		});
+		const { digest, transaction, effects, events, errors } = executedTx;
+		console.log(digest, transaction, effects, events);
+	} catch (err) {
+		console.log(err);
+		return null;
+	}
+}
+
+async function test_claim() {
+	try {
+		const couponId = "0x169dd19ec5e649aab5ffcc5e0d201cfa58b995838ca29b0d433b8645ab47d818"
+		const tx = new TransactionBlock();
+		await tx.moveCall({
+			// public entry fun claimCoupon(
+			// 	phase: &Phase,
+			// coupon: CouponNFT,
+			// boxConfig: &mut BoxConfig,
+			target: `${packageId}::box_nft::claimCoupon`,
+			arguments: [
+				tx.object(phaseId),
+				tx.object(couponId),
+				tx.object(boxConfigId),
+			],
+		});
+
+		const executedTx = await signer.signAndExecuteTransactionBlock({
+			transactionBlock: tx,
+			options: {
+				showInput: true,
+				showEffects: true,
+				showEvents: true,
+				showObjectChanges: true,
+			},
+		});
+		const { digest, transaction, effects, events, errors } = executedTx;
+		console.log(digest, transaction, effects, events);
+	} catch (err) {
+		console.log(err);
+		return null;
+	}
+}
+
 async function test_transfer_object(objectId: string, receiver: string) {
 	const tx = new TransactionBlock();
 	tx.transferObjects(
@@ -138,8 +199,10 @@ async function test_transfer_object(objectId: string, receiver: string) {
 
 async function main() {
 	// await test_openbox()
-	await test_transfer_object('0x342c2049583e18276b80cba6d6f069e57e1ca37b26e67aaa8971b6bc890d25b2',
-		'0x17e20dae7cc09979265e6f6b6f86fd8e6c3dd53b96dc9b264cb68bda468aa50b')
+	// await test_transfer_object('0x342c2049583e18276b80cba6d6f069e57e1ca37b26e67aaa8971b6bc890d25b2',
+	// 	'0x17e20dae7cc09979265e6f6b6f86fd8e6c3dd53b96dc9b264cb68bda468aa50b')
+
+	await test_claim()
 }
 
 main()

@@ -251,4 +251,9 @@ module sui_nft_box::box_nft {
         );
         transfer::public_transfer(paid, reciever);
     }
+
+    // TODO remove before launched
+    public entry fun freemint(template1: &NFTConfig, ctx: &mut TxContext) {
+        mint_nft(template1, ctx);
+    }
 }
