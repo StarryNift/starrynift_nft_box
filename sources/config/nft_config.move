@@ -1,6 +1,6 @@
 module starrynift_nft_box::nft_config {
     use std::option::{Self, Option};
-    use std::string::{String, bytes, utf8};
+    use std::string::{String, bytes};
 
     use starrynift_nft_box::admin::{Contract, assert_admin};
     use sui::event;
@@ -8,8 +8,10 @@ module starrynift_nft_box::nft_config {
     use sui::transfer;
     use sui::tx_context::TxContext;
     use sui::url::{Self, Url};
-    use std::string;
-    use std::ascii::string;
+
+    // =================== Error =================
+
+    const EWrongNoCoupon: u64 = 0;
 
     // =================== Struct =================
 
@@ -88,6 +90,10 @@ module starrynift_nft_box::nft_config {
 
     public fun get_nft_coupon_attributes(nft_config: &NFTConfig): &Option<Coupon> {
         &nft_config.attributes.coupon
+    }
+
+    public fun get_nft_coupon_amount(coupon_nft: &Coupon): u64 {
+        coupon_nft.amount
     }
 
     /// Create avatar NFT config
@@ -232,10 +238,5 @@ module starrynift_nft_box::nft_config {
         };
 
         transfer::share_object(nft_config);
-    }
-
-    public entry fun burn_coupon(coupon: CouponNFT) {
-        let CouponNFT { id, name: _, description: _, img_url: _, attributes: _  } = coupon;
-        object::delete(id)
     }
 }

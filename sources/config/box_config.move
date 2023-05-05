@@ -5,12 +5,11 @@ module starrynift_nft_box::box_config {
     use sui::clock::{Self, Clock};
     use sui::event;
     use sui::object::{Self, UID, ID};
+    use sui::table::{Self, Table};
     use sui::transfer;
     use sui::tx_context::TxContext;
     use sui::url::{Self, Url};
     use sui::vec_set::{Self, VecSet};
-    use sui::table::Table;
-    use sui::table;
 
     // =================== Error =================
 
