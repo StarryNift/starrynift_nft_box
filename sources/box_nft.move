@@ -94,13 +94,13 @@ module starrynift_nft_box::box_nft {
     struct OpenBoxNFTEvent has copy, drop {
         box_id: ID,
         box_phase: u8,
-        user: address,
+        creator: address,
     }
 
     struct ClaimCouponEvent has copy, drop {
         coupon_id: ID,
         box_phase: u8,
-        user: address,
+        claimer: address,
     }
 
     // =================== Function =================
@@ -438,7 +438,7 @@ module starrynift_nft_box::box_nft {
             OpenBoxNFTEvent {
                 box_id: object::uid_to_inner(&mystery_box.id),
                 box_phase: mystery_box.phase,
-                user: tx_context::sender(ctx),
+                creator: tx_context::sender(ctx),
             }
         );
 
@@ -476,7 +476,7 @@ module starrynift_nft_box::box_nft {
             ClaimCouponEvent {
                 coupon_id: object::uid_to_inner(&coupon.id),
                 box_phase: get_box_phase(box_config),
-                user: tx_context::sender(ctx),
+                claimer: tx_context::sender(ctx),
             }
         );
 
