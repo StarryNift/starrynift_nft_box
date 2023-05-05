@@ -19,10 +19,13 @@ module starrynift_nft_box::box_nft {
     use sui::event;
     use sui::object::{Self, ID, UID, uid_as_inner};
     use sui::package;
+    use sui::object::{Self, ID, UID, uid_as_inner, id};
     use sui::sui::SUI;
     use sui::transfer;
     use sui::tx_context::{Self, TxContext};
     use sui::url::Url;
+    use sui::transfer::public_transfer;
+    use sui::package::receipt_cap;
 
     // =================== Error =================
 
@@ -434,5 +437,55 @@ module starrynift_nft_box::box_nft {
         );
 
         box_info.opened = box_info.opened + 1;
+    }
+
+    public entry fun claimCoupon(
+        phase: &Phase,
+        coupon: CouponNFT,
+        boxConfig: &mut BoxConfig,
+        ctx: &mut TxContext)
+    {
+        let sender = tx_context::sender(ctx);
+        let amount = get_coupon_amount(&coupon);
+        let phaseIndex = get_current_phase(phase);
+
+        assert_box_same_phase(phaseIndex, boxConfig);
+
+        // check role
+        add_coupon_claim_record(
+            boxConfig, amount, sender
+        );
+        burn_coupon(coupon);
+    }
+
+    public fun fundCoupon(
+        phase: &Phase,
+        contract: &Contract,
+        boxConfig: &mut BoxConfig,
+        paid: Coin<SUI>,
+        reciever: address,
+        ctx: &mut TxContext
+    ) {
+        let sender = tx_context::sender(ctx);
+        assert_admin(contract, ctx);
+
+        let phaseIndex = get_current_phase(phase);
+
+        assert_box_same_phase(phaseIndex, boxConfig);
+
+        let amount = get_user_claim_record(boxConfig, reciever);
+
+        assert!(amount == coin::value(&paid), EINSUFFIENT_PAID);
+
+        // check role
+        remove_coupon_claim_record(
+            boxConfig, sender
+        );
+        transfer::public_transfer(paid, reciever);
+    }
+
+    // TODO remove before launched
+    public entry fun freemint(template1: &NFTConfig, ctx: &mut TxContext) {
+        mint_nft(template1, ctx);
     }
 }

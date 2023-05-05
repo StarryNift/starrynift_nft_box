@@ -18,6 +18,7 @@ Cargo.lock
 
 build/
 .env
+build
 
 node_modules
 sui.log.*

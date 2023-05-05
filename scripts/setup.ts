@@ -30,16 +30,10 @@ const packageId = process.env.PACKAGE_ID || "";
 const contractId = process.env.CONTRACT_ID || "";
 const phaseId = process.env.PHASE_ID || "";
 
-/**
- * 设置合约新 Owner
- * @param contract
- * @param new_owner
- */
+
 async function set_contract_owner(contract: string, new_owner: string) {
   try {
     const tx = new TransactionBlock();
-    // const gasBudget = await provider.getReferenceGasPrice()
-    // tx.setGasBudget(defaultGasBudget);
     const txn = await tx.moveCall({
       target: `${packageId}::admin::set_contract_owner`,
       arguments: [tx.object(contract), tx.pure(new_owner)],
@@ -62,9 +56,6 @@ async function set_contract_owner(contract: string, new_owner: string) {
   }
 }
 
-/**
- * 创建盲盒配置
- */
 async function create_box_config(boxId: number) {
   try {
     const tx = new TransactionBlock();
@@ -82,13 +73,13 @@ async function create_box_config(boxId: number) {
         tx.pure("The boxes come with varying rarity levels. By harnessing the unmatched scalability of the Sui Network for efficient transaction processing and storage. We have bundled three different assets - AI ANIMO characters, Starryverse 3D virtual spaces, and Sui token packages - into each box", "string"),
         // box_image
         tx.pure(
-          "https://starrynift.s3.ap-southeast-1.amazonaws.com/web/img/sui-mysterybox.png",
+          "https://d1uoymq29mtp9f.cloudfront.net/web/img/sui-mysterybox.png",
           "string"
         ),
         // box_price
         tx.pure(0, "u64"),
         // open_time
-        tx.pure(Math.ceil(new Date().getTime() / 1000 + 86400 * 120), "u64"),
+        tx.pure(Math.ceil(new Date().getTime() / 1000), "u64"),
       ],
     });
 
@@ -103,7 +94,7 @@ async function create_box_config(boxId: number) {
     });
 
     const { digest, transaction, effects, events, errors } = executedTx;
-    console.log("box config", digest, transaction);
+    // console.log("box config", digest, transaction);
     if (effects && effects.created && effects.created[0]) {
       return effects.created[0].reference?.objectId;
     }
@@ -114,17 +105,6 @@ async function create_box_config(boxId: number) {
   }
 }
 
-/**
- *
- * create_avatar_nft_config(
- *   contract: &Contract,
- *   name: String,
- *   description: String,
- *   img_url: String,
- *   can_mint: bool,
- *   asset_id: String,
- *)
- * */
 async function create_avatar_nft_config({
   name,
   description,
@@ -182,11 +162,13 @@ async function create_space_nft_config({
   description,
   image,
   canMint = true,
+	sceneId
 }: {
   name: string;
   description: string;
   image: string;
   canMint?: boolean;
+	sceneId?: number;
 }) {
   try {
     const tx = new TransactionBlock();
@@ -204,8 +186,8 @@ async function create_space_nft_config({
         tx.pure(image, "string"),
         // can_mint
         tx.pure(canMint, "bool"),
-        // scene_id TODO
-        tx.pure(1, "u8"),
+        // scene_id
+        tx.pure(sceneId, "u8"),
       ],
     });
 
@@ -408,7 +390,7 @@ async function add_nft_item() {
 
 	let metadataList = []
 
-  for (let { name, category, description, amount, rarity, image } of nftMetadataList) {
+  for (let { name, category, description, amount, rarity, sceneId, image } of nftMetadataList) {
     switch (category) {
       case 1: // avatar
         {
@@ -427,6 +409,7 @@ async function add_nft_item() {
             name,
             description,
             image,
+	          sceneId,
           });
 	        metadataList.push({ name, objectId, category, rarity });
 					console.log(JSON.stringify(metadataList))
@@ -507,19 +490,17 @@ const queryPhaseConfig = async function () {
 async function main() {
 	const new_owner = await signer.getAddress();
 
-	await fetchDeployInfo('DQu9TSYdbVrxnCZVrQa5LAQmGf8tQYKXjNr1WF7G5pEu')
+	// await fetchDeployInfo('DQu9TSYdbVrxnCZVrQa5LAQmGf8tQYKXjNr1WF7G5pEu')
 
 	// await set_contract_signer_public_key();
 	// await add_or_modify_phase_config();
 	// await set_current_phase(1);
-	//
 
-	// boxid2 digest 9jZ4XrfautyBMYMAJapodT9cQqQSCFm396uy5S3TLc2p
-	// boxid2 boxid  0x3baadf5c7f760e18856019a5bd829cbc5ed40d17a43ecb1cb2e7fae9e2c74604
 	// const boxConfigId = await create_box_config(1);
 	// console.log({ boxConfigId });
 
 	const metadataList = await add_nft_item();
+	console.log(metadataList)
 }
 
 main()
