@@ -119,8 +119,8 @@ module starrynift_nft_box::box_nft {
             dw,
             &mut collection,
             display_info::new(
-                string::utf8(b"StarryNift"),
-                string::utf8(b"StarryNift collection on Sui"),
+                string::utf8(b"AI ANIMO"),
+                string::utf8(b"AI ANIMO is an experimental project launched by StarryNift on Sui Mainnet that aims to push the boundaries of NFTs by combining the latest AIGC and Composable 3D technologies."),
             )
         );
 
