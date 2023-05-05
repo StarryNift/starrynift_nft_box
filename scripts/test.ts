@@ -6,17 +6,18 @@ import {
 	TransactionBlock,
 	testnetConnection, DEFAULT_ED25519_DERIVATION_PATH,
 } from "@mysten/sui.js";
-import { bcs, serU82U8Vector } from './bcsUtil'
+import { bcs } from './bcsUtil'
 import {BCS} from "@mysten/bcs";
 require("dotenv").config();
-
 const nftMetadataList: any = require("../consts/Metadata.json");
+
 const MNEMONICS: string = process.env.MNEMONICS || "";
 const provider = new JsonRpcProvider(testnetConnection);
 const keypair_ed25519 = Ed25519Keypair.deriveKeypair(
   MNEMONICS,
   DEFAULT_ED25519_DERIVATION_PATH
 );
+
 const signer = new RawSigner(keypair_ed25519, provider);
 const publicKey = keypair_ed25519.getPublicKey();
 const defaultGasBudget = 0.01 * 10 ** 9
@@ -26,6 +27,12 @@ const contractId = process.env.CONTRACT_ID || "";
 const phaseId = process.env.PHASE_ID || "";
 const boxConfigId = process.env.BOX_CONFIG_ID || "";
 const boxInfoId = process.env.BOX_INFO_ID || "";
+
+const avatarMintCap = process.env.AVATAR_MINT_CAP || "";
+const spaceMintCap = process.env.SPACE_MINT_CAP || "";
+const couponMintCap = process.env.COUPON_MINT_CAP || "";
+const mysteryBoxMintCap = process.env.MYSTERY_BOX_MINT_CAP || "";
+
 
 async function test_mint() {
 	const data = {
@@ -50,6 +57,54 @@ async function test_mint() {
 					bcs.ser(['vector', BCS.U8],
 						Buffer.from(data.signature, 'hex')).toBytes()
 				),
+			],
+		});
+
+		const executedTx = await signer.signAndExecuteTransactionBlock({
+			transactionBlock: tx,
+			options: {
+				showInput: true,
+				showEffects: true,
+				showEvents: true,
+				showObjectChanges: true,
+			},
+		});
+		const { digest, transaction, effects, events, errors } = executedTx;
+		console.log(digest, transaction, effects, events);
+	} catch (err) {
+		console.log(err);
+		return null;
+	}
+}
+
+const queryPhaseConfig = async function () {
+	const address = await signer.getAddress();
+	const provider = new JsonRpcProvider(testnetConnection);
+
+	const { data } = await provider.getObject({
+		id: "0x0971c1164c43062441e0d128809d8dc2c33d50af1332e625200db3d159500370",
+		options: { showType: true, showContent: true },
+	});
+
+	return data
+};
+
+async function test_public_mint() {
+	try {
+		const mint_amount = 3, mint_price = 1000
+		const tx = new TransactionBlock();
+		const [coin] = tx.splitCoins(tx.gas, [tx.pure(mint_amount * mint_price)]);
+		const txn = await tx.moveCall({
+			target: `${packageId}::box_nft::buy_box`,
+			arguments: [
+				tx.object(phaseId),
+				tx.object(contractId),
+				tx.object(boxConfigId),
+				tx.object(boxInfoId),
+				tx.object("0x6"),
+				tx.pure(mysteryBoxMintCap),
+				tx.pure(mint_amount),
+				coin,
 			],
 		});
 
@@ -121,11 +176,25 @@ async function test_openbox() {
 
 async function test_freemint() {
 	try {
+
+		// [{"name":"Blank","objectId":"0xca224357fb6042e2fe20e9563bc3492b145b3a8d93bbbdbf0c68c9de3bb9cce7","category":0,"rarity":"R"},
+		// {"name":"500 SUI Voucher","objectId":"0x724d14562e3ef268fa74e7fc774b8fe1b5a17351c680b66fe5266aa1900dcefe","category":3,"rarity":"UR"},
+		// {"name":"20 SUI Voucher","objectId":"0xee80ab8897f3186be51ab49b12af3346583d855b4523f5462864b0bc9f69f07e","category":3,"rarity":"SR"},
+		// {"name":"Premium Cyber Space","objectId":"0x7ad18ef43fc885636c180e2ba745d4b551745896b3316bc94f0cc558bdbcd2ba","category":2,"rarity":"UR"},{"name":"Aqua World Space","objectId":"0x50303cc28b9e786dd487a7fa85ae768991a5462e5f0826ca407b642012a836c1","category":2,"rarity":"R"}]
+
+		const templateId = '0x7ad18ef43fc885636c180e2ba745d4b551745896b3316bc94f0cc558bdbcd2ba'
+
+		console.log({
+			templateId, avatarMintCap, spaceMintCap, couponMintCap
+		})
 		const tx = new TransactionBlock();
 		const txn = await tx.moveCall({
 			target: `${packageId}::box_nft::freemint`,
 			arguments: [
-				tx.object("0xf67a9cd3076d6ad1330331c8842276e8eef3e1828db2b91088ba0cb8c2b85977"),
+				tx.object(templateId),
+				tx.object(avatarMintCap),
+				tx.object(spaceMintCap),
+				tx.object(couponMintCap),
 			],
 		});
 
@@ -202,7 +271,9 @@ async function main() {
 	// await test_transfer_object('0x342c2049583e18276b80cba6d6f069e57e1ca37b26e67aaa8971b6bc890d25b2',
 	// 	'0x17e20dae7cc09979265e6f6b6f86fd8e6c3dd53b96dc9b264cb68bda468aa50b')
 
-	await test_claim()
+	// await test_claim()
+	// await test_freemint()
+	await test_public_mint()
 }
 
 main()

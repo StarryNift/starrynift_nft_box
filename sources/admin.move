@@ -1,4 +1,4 @@
-module sui_nft_box::admin {
+module starrynift_nft_box::admin {
     use std::vector;
 
     use sui::object::{Self, UID};

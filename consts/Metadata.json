@@ -48,7 +48,7 @@
     "category": 2,
     "sceneId": 21,
     "createdAt": "2023-05-01T11:57:52.155Z",
-    "description": " A composable 3D Space in Starryverse featuring breathtaking undersea scene thant transport users to a serene and vibrant underwater world filled with colorful coral reefs, exotic marine life, and stunning oceanic vistas, offering a mesmerizing and immersive experience.",
+    "description": "A composable 3D Space in Starryverse featuring breathtaking undersea scene that transport users to a serene and vibrant underwater world filled with colorful coral reefs, exotic marine life, and stunning oceanic vistas, offering a mesmerizing and immersive experience.",
     "name": "Aqua World Space",
     "rarity": "R",
     "image": "https://d1uoymq29mtp9f.cloudfront.net/web/img/sui/metadata/2_1_1.png",
@@ -61,7 +61,7 @@
     "description": "A meditation master in the ancient forest, who has deep knowledge of past and present lives and can communicate with the ancient ancestors of the forest through meditation.",
     "name": "Sedated Master Fox",
     "rarity": "UR",
-    "image": "https://d1uoymq29mtp9f.cloudfront.net/web/img/sui/metadata/1_3_1.png",
+    "image": "https://d1uoymq29mtp9f.cloudfront.net/web/img/sui/metadata/1_3_2.png",
     "updatedAt": "2023-05-01T11:57:09.359Z"
   },
   {
@@ -70,7 +70,7 @@
     "createdAt": "2023-05-01T11:56:35.120Z",
     "description": "A brave turtle with special abilities to navigate and clear obstacles in the ocean, equipped with high-tech bombs to eliminate any threat to the marine ecosystem, and is respected by people for its courage and wisdom in handling dangerous missions.",
     "name": "Sea Bomb Sweeper",
-    "image": "https://d1uoymq29mtp9f.cloudfront.net/web/img/sui/metadata/1_2_1.png",
+    "image": "https://d1uoymq29mtp9f.cloudfront.net/web/img/sui/metadata/1_2_2.png",
     "rarity": "SR",
     "updatedAt": "2023-05-01T11:56:35.120Z"
   },
@@ -81,38 +81,8 @@
     "description": "A creative and passionate musician who loves psychedelic music and has the ability to manipulate the emotions and consciousness of his audience through his music. He produces beautiful dynamic patterns of light that change with the music, creating a mesmerizing visual effect.",
     "name": "Mutated DJ Water Nymph",
     "rarity": "R",
-    "image": "https://d1uoymq29mtp9f.cloudfront.net/web/img/sui/metadata/1_1_1.png",
-    "updatedAt": "2023-05-01T11:56:04.726Z"
-  },
-  {
-    "id": "0x8bc8d296e4a1663bb7871b62ad9a46901ba50abe176d376be29513576d577d06",
-    "category": 1,
-    "createdAt": "2023-05-01T11:54:44.934Z",
-    "description": "A skilled martial artist who, after a foreign army invaded his homeland and imprisoned him, developed a unique ability to transform into the powerful warrior god Asura by closing his eyes, using it to defeat the enemy and become the new leader of his tribe.",
-    "name": "War God Raccoon",
-    "rarity": "UR",
-    "image": "https://d1uoymq29mtp9f.cloudfront.net/web/img/sui/metadata/1_3_2.png",
-    "updatedAt": "2023-05-01T11:54:44.934Z"
-  },
-  {
-    "id": "0x8bc8d296e4a1663bb7871b62ad9a46901ba50abe176d376be29513576d577d05",
-    "category": 1,
-    "createdAt": "2023-05-01T11:53:50.738Z",
-    "description": "A brave and skilled fighter that ont only protect his own territory in the ocean, but also seeking challenges in other places. They even attempted to challenge various ethnic groups in the ancient forest of God's Parable, but were eventually subdued by War God Raccoon and returned to the sea, assuming the responsibility of safeguarding the peace of the sea.",
-    "name": "Cyborg Fighter Goldfish",
-    "image": "https://d1uoymq29mtp9f.cloudfront.net/web/img/sui/metadata/1_2_2.png",
-    "rarity": "SR",
-    "updatedAt": "2023-05-01T11:53:50.738Z"
-  },
-  {
-    "id": "0x8bc8d296e4a1663bb7871b62ad9a46901ba50abe176d376be29513576d577d04",
-    "category": 1,
-    "createdAt": "2023-05-01T11:52:56.308Z",
-    "description": "One of the most popular characters in AI Fairyland, known for her gorgeous unicorn appearance, pink curly hair, and friendly, kind personality. She has won beauty pageants and established her own successful beauty brand, making her a successful entrepreneur and fashion icon.",
-    "name": "Comely Elf Unicorn",
     "image": "https://d1uoymq29mtp9f.cloudfront.net/web/img/sui/metadata/1_1_2.png",
-    "rarity": "R",
-    "updatedAt": "2023-05-01T11:52:56.308Z"
+    "updatedAt": "2023-05-01T11:56:04.726Z"
   },
   {
     "id": "0x8bc8d296e4a1663bb7871b62ad9a46901ba50abe176d376be29513576d577d03",
@@ -138,7 +108,7 @@
     "id": "0x8bc8d296e4a1663bb7871b62ad9a46901ba50abe176d376be29513576d577d01",
     "category": 1,
     "createdAt": "2023-05-01T11:48:30.598Z",
-    "description": "A magical creature that appears lethargic but has the powerful ability to hypnotize and control the thoughts and behaviors of others through its famous Baby Shark song. However, it often uses its power to help those in need, rather than harm others.",
+    "description": "A magical creature that appears lethargic but has the powerful ability to hypnotize and control the thoughts and behaviors of others through its famous \"Baby Shark\" song. However, it often uses its power to help those in need, rather than harm others.",
     "name": "Sleepy Baby Shark",
     "rarity": "R",
     "image": "https://d1uoymq29mtp9f.cloudfront.net/web/img/sui/metadata/1_1_1.png",

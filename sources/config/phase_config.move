@@ -1,11 +1,11 @@
-module sui_nft_box::phase_config {
+module starrynift_nft_box::phase_config {
+    use starrynift_nft_box::admin::{assert_admin, Contract};
     use sui::clock::{Self, Clock};
     use sui::event;
     use sui::object::{Self, UID, ID};
     use sui::object_table::{Self, ObjectTable};
     use sui::transfer;
     use sui::tx_context::TxContext;
-    use sui_nft_box::admin::{assert_admin, Contract};
 
     // =================== Error =================
 

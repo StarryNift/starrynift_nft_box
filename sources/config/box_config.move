@@ -1,16 +1,15 @@
-module sui_nft_box::box_config {
+module starrynift_nft_box::box_config {
     use std::string::{String, bytes};
 
+    use starrynift_nft_box::admin::{Contract, assert_admin};
     use sui::clock::{Self, Clock};
     use sui::event;
     use sui::object::{Self, UID, ID};
+    use sui::table::{Self, Table};
     use sui::transfer;
     use sui::tx_context::TxContext;
     use sui::url::{Self, Url};
     use sui::vec_set::{Self, VecSet};
-    use sui_nft_box::admin::{Contract, assert_admin};
-    use sui::table::Table;
-    use sui::table;
 
     // =================== Error =================
 
@@ -56,20 +55,24 @@ module sui_nft_box::box_config {
 
     // =================== Function =================
 
-    public fun get_box_name(box: &BoxConfig): String {
-        box.name
+    public fun get_box_phase(box_config: &BoxConfig): u8 {
+        box_config.phase
     }
 
-    public fun get_box_description(box: &BoxConfig): String {
-        box.description
+    public fun get_box_name(box_config: &BoxConfig): String {
+        box_config.name
     }
 
-    public fun get_box_img_url(box: &BoxConfig): Url {
-        box.img_url
+    public fun get_box_description(box_config: &BoxConfig): String {
+        box_config.description
     }
 
-    public fun get_box_price(box: &BoxConfig): u64 {
-        box.box_price
+    public fun get_box_img_url(box_config: &BoxConfig): Url {
+        box_config.img_url
+    }
+
+    public fun get_box_price(box_config: &BoxConfig): u64 {
+        box_config.box_price
     }
 
     /// Check phase config and box config has the same phase
@@ -168,15 +171,24 @@ module sui_nft_box::box_config {
         });
     }
 
-    public fun get_user_claim_record(box_config: &BoxConfig, address: address): u64 {
+    fun get_user_claim_record(box_config: &BoxConfig, address: address): u64 {
         *table::borrow(&box_config.claimed_coupon, address)
     }
 
-    public entry fun add_coupon_claim_record(box_config: &mut BoxConfig, amount: u64, address: address) {
-        table::add(&mut box_config.claimed_coupon, address, amount);
+    public fun add_coupon_claim_record(box_config: &mut BoxConfig, address: address, amount: u64, ) {
+        let claimed_coupon_exists = table::contains(&box_config.claimed_coupon, address);
+
+        if (claimed_coupon_exists) {
+            let old_amount = get_user_claim_record(box_config, address);
+            let new_amount = table::borrow_mut(&mut box_config.claimed_coupon, address);
+
+            *new_amount = amount + old_amount;
+        } else {
+            table::add(&mut box_config.claimed_coupon, address, amount);
+        };
     }
 
-    public entry fun remove_coupon_claim_record(box_config: &mut BoxConfig, address: address) {
+    public fun remove_coupon_claim_record(box_config: &mut BoxConfig, address: address) {
         table::remove(&mut box_config.claimed_coupon, address);
     }
 }

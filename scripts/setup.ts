@@ -21,15 +21,10 @@ const signer = new RawSigner(keypair_ed25519, provider);
 const publicKey = keypair_ed25519.getPublicKey();
 const defaultGasBudget = 0.01 * 10 ** 9
 
-interface PackageInfo {
-  packageId?: string;
-  objectId?: string;
-}
-
 const packageId = process.env.PACKAGE_ID || "";
 const contractId = process.env.CONTRACT_ID || "";
 const phaseId = process.env.PHASE_ID || "";
-
+const currentPhase = 1
 
 async function set_contract_owner(contract: string, new_owner: string) {
   try {
@@ -56,7 +51,32 @@ async function set_contract_owner(contract: string, new_owner: string) {
   }
 }
 
-async function create_box_config(boxId: number) {
+async function set_contract_receiver(contract: string, new_receiver: string) {
+	try {
+		const tx = new TransactionBlock();
+		const txn = await tx.moveCall({
+			target: `${packageId}::admin::set_contract_receiver`,
+			arguments: [tx.object(contract), tx.pure(new_receiver)],
+		});
+
+		const executedTx = await signer.signAndExecuteTransactionBlock({
+			transactionBlock: tx,
+			options: {
+				showInput: true,
+				showEffects: true,
+				showEvents: true,
+				showObjectChanges: true,
+			},
+		});
+		const { digest, transaction, effects, events, errors } = executedTx;
+		console.log(digest, transaction, effects, events);
+	} catch (err) {
+		console.log(err);
+		return null;
+	}
+}
+
+async function create_box_config(currentPhase: number, boxPrice: number) {
   try {
     const tx = new TransactionBlock();
     tx.setGasBudget(defaultGasBudget);
@@ -66,7 +86,7 @@ async function create_box_config(boxId: number) {
         // contract ID
         tx.object(contractId),
         // phase
-        tx.pure(boxId, "u8"),
+        tx.pure(currentPhase, "u8"),
         // box_name
         tx.pure("AI ANIMO Mystery Box", "string"),
         // box_description
@@ -77,7 +97,7 @@ async function create_box_config(boxId: number) {
           "string"
         ),
         // box_price
-        tx.pure(0, "u64"),
+        tx.pure(boxPrice, "u64"),
         // open_time
         tx.pure(Math.ceil(new Date().getTime() / 1000), "u64"),
       ],
@@ -267,7 +287,7 @@ async function create_coupon_nft_config({
   }
 }
 
-async function add_or_modify_phase_config() {
+async function add_or_modify_phase_config(currentPhase: number) {
   try {
     const tx = new TransactionBlock();
     tx.setGasBudget(defaultGasBudget);
@@ -279,12 +299,12 @@ async function add_or_modify_phase_config() {
         // contract ID
         tx.object(contractId),
         // phaseId
-        tx.pure(1, "u8"),
+        tx.pure(currentPhase, "u8"),
         // allow_public_mint
         tx.pure(true, "bool"),
         // startTime
-        tx.pure(0, "u64"),
-        tx.pure(Math.ceil(new Date().getTime() / 1000 + 86400 * 30), "u64"),
+        tx.pure(Math.ceil(new Date().getTime() / 1000), "u64"),
+        tx.pure(Math.ceil(new Date().getTime() / 1000) + 3600, "u64"),
       ],
     });
 
@@ -307,6 +327,41 @@ async function add_or_modify_phase_config() {
     console.log(err);
     return null;
   }
+}
+
+async function toggle_contract_freeze() {
+	try {
+		const tx = new TransactionBlock();
+		tx.setGasBudget(defaultGasBudget);
+		tx.moveCall({
+			target: `${packageId}::admin::toggle_contract_freeze`,
+			arguments: [
+				// contract ID
+				tx.object(contractId),
+			],
+		});
+
+		const executedTx = await signer.signAndExecuteTransactionBlock({
+			transactionBlock: tx,
+			options: {
+				showInput: true,
+				showEffects: true,
+				showEvents: true,
+				showObjectChanges: true,
+			},
+		});
+
+		const { effects } = executedTx;
+		const status = effects?.status
+		if (status?.status === 'failure') {
+			console.log('toggle_contract_freeze failed', status.error)
+		} else {
+			console.log('toggle_contract_freeze success')
+		}
+	} catch (err) {
+		console.log(err);
+		return null;
+	}
 }
 
 async function set_contract_signer_public_key() {
@@ -464,43 +519,49 @@ async function fetchDeployInfo(digest: string) {
 	const contractId = objectChanges.find((item:any) => item.type === 'created' && item.objectType.includes('::Contract')).objectId
 	const upgradeCap = objectChanges.find((item:any) => item.type === 'created' && item.objectType.includes('::UpgradeCap')).objectId
 	const phaseId = objectChanges.find((item:any) => item.type === 'created' && item.objectType.includes('::Phase')).objectId
+	const avatarMintCap = objectChanges.find((item:any) => item.type === 'created' && /0x[0-9a-fA-F]+::mint_cap::MintCap<0x[0-9a-fA-F]+::box_nft::AvatarNFT>/.test(item.objectType)).objectId
+	const spaceMintCap = objectChanges.find((item:any) => item.type === 'created' && /0x[0-9a-fA-F]+::mint_cap::MintCap<0x[0-9a-fA-F]+::box_nft::SpaceNFT>/.test(item.objectType)).objectId
+	const couponMintCap = objectChanges.find((item:any) => item.type === 'created' && /0x[0-9a-fA-F]+::mint_cap::MintCap<0x[0-9a-fA-F]+::box_nft::CouponNFT>/.test(item.objectType)).objectId
+	const mysteryBoxCap = objectChanges.find((item:any) => item.type === 'created' && /0x[0-9a-fA-F]+::mint_cap::MintCap<0x[0-9a-fA-F]+::box_nft::MysteryBox>/.test(item.objectType)).objectId
+	const boxInfoId = objectChanges.find((item:any) => item.type === 'created' && /0x[0-9a-fA-F]+::box_nft::BoxInfo/.test(item.objectType)).objectId
 
-
-console.log(`
+	console.log(`
 PACKAGE_ID=${packageId}
 COLLECTION_ID=${collectionId}
 CONTRACT_ID=${contractId}
 UPGRADE_CAP=${upgradeCap}
 PHASE_ID=${phaseId}
+AVATAR_MINT_CAP=${avatarMintCap}
+SPACE_MINT_CAP=${spaceMintCap}
+COUPON_MINT_CAP=${couponMintCap}
+MYSTERY_BOX_MINT_CAP=${mysteryBoxCap}
+BOX_INFO_ID=${boxInfoId}
 `)
 }
-
-const queryPhaseConfig = async function () {
-  const address = await signer.getAddress();
-  const provider = new JsonRpcProvider(testnetConnection);
-
-  const { data } = await provider.getObject({
-    id: "0x0971c1164c43062441e0d128809d8dc2c33d50af1332e625200db3d159500370",
-    options: { showType: true, showContent: true },
-  });
-
-  return data
-};
 
 async function main() {
 	const new_owner = await signer.getAddress();
 
-	// await fetchDeployInfo('DQu9TSYdbVrxnCZVrQa5LAQmGf8tQYKXjNr1WF7G5pEu')
-
+	// await fetchDeployInfo('HCwQcwp79e2BwcU1EQFYuX1BdmLPy9kjNeMmn1dcaCwm')
+	// set public key
 	// await set_contract_signer_public_key();
-	// await add_or_modify_phase_config();
-	// await set_current_phase(1);
 
-	// const boxConfigId = await create_box_config(1);
+	// set phase info
+	await add_or_modify_phase_config(currentPhase);
+	// await toggle_contract_freeze()
+	// await set_current_phase(currentPhase);
+
+	// await set_contract_receiver(contractId, "0x17e20dae7cc09979265e6f6b6f86fd8e6c3dd53b96dc9b264cb68bda468aa50b")
+
+
+	// SET box info
+	// const boxPrice = 1000
+	// const boxConfigId = await create_box_config(currentPhase, boxPrice);
 	// console.log({ boxConfigId });
 
-	const metadataList = await add_nft_item();
-	console.log(metadataList)
+	// set metadata
+	// const metadataList = await add_nft_item();
+	// console.log(metadataList)
 }
 
 main()
@@ -509,3 +570,5 @@ main()
     console.error(`error: ${error.stack}`);
     process.exit(1);
   });
+
+
