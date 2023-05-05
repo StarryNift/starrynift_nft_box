@@ -21,11 +21,6 @@ const signer = new RawSigner(keypair_ed25519, provider);
 const publicKey = keypair_ed25519.getPublicKey();
 const defaultGasBudget = 0.01 * 10 ** 9
 
-interface PackageInfo {
-  packageId?: string;
-  objectId?: string;
-}
-
 const packageId = process.env.PACKAGE_ID || "";
 const contractId = process.env.CONTRACT_ID || "";
 const phaseId = process.env.PHASE_ID || "";
@@ -54,6 +49,31 @@ async function set_contract_owner(contract: string, new_owner: string) {
     console.log(err);
     return null;
   }
+}
+
+async function set_contract_receiver(contract: string, new_receiver: string) {
+	try {
+		const tx = new TransactionBlock();
+		const txn = await tx.moveCall({
+			target: `${packageId}::admin::set_contract_receiver`,
+			arguments: [tx.object(contract), tx.pure(new_receiver)],
+		});
+
+		const executedTx = await signer.signAndExecuteTransactionBlock({
+			transactionBlock: tx,
+			options: {
+				showInput: true,
+				showEffects: true,
+				showEvents: true,
+				showObjectChanges: true,
+			},
+		});
+		const { digest, transaction, effects, events, errors } = executedTx;
+		console.log(digest, transaction, effects, events);
+	} catch (err) {
+		console.log(err);
+		return null;
+	}
 }
 
 async function create_box_config(currentPhase: number, boxPrice: number) {
@@ -283,8 +303,8 @@ async function add_or_modify_phase_config(currentPhase: number) {
         // allow_public_mint
         tx.pure(true, "bool"),
         // startTime
-        tx.pure(0, "u64"),
-        tx.pure(Math.ceil(new Date().getTime() / 1000 + 86400 * 7), "u64"),
+        tx.pure(Math.ceil(new Date().getTime() / 1000), "u64"),
+        tx.pure(Math.ceil(new Date().getTime() / 1000) + 3600, "u64"),
       ],
     });
 
@@ -307,6 +327,41 @@ async function add_or_modify_phase_config(currentPhase: number) {
     console.log(err);
     return null;
   }
+}
+
+async function toggle_contract_freeze() {
+	try {
+		const tx = new TransactionBlock();
+		tx.setGasBudget(defaultGasBudget);
+		tx.moveCall({
+			target: `${packageId}::admin::toggle_contract_freeze`,
+			arguments: [
+				// contract ID
+				tx.object(contractId),
+			],
+		});
+
+		const executedTx = await signer.signAndExecuteTransactionBlock({
+			transactionBlock: tx,
+			options: {
+				showInput: true,
+				showEffects: true,
+				showEvents: true,
+				showObjectChanges: true,
+			},
+		});
+
+		const { effects } = executedTx;
+		const status = effects?.status
+		if (status?.status === 'failure') {
+			console.log('toggle_contract_freeze failed', status.error)
+		} else {
+			console.log('toggle_contract_freeze success')
+		}
+	} catch (err) {
+		console.log(err);
+		return null;
+	}
 }
 
 async function set_contract_signer_public_key() {
@@ -484,38 +539,29 @@ BOX_INFO_ID=${boxInfoId}
 `)
 }
 
-const queryPhaseConfig = async function () {
-  const address = await signer.getAddress();
-  const provider = new JsonRpcProvider(testnetConnection);
-
-  const { data } = await provider.getObject({
-    id: "0x0971c1164c43062441e0d128809d8dc2c33d50af1332e625200db3d159500370",
-    options: { showType: true, showContent: true },
-  });
-
-  return data
-};
-
 async function main() {
 	const new_owner = await signer.getAddress();
 
-	await fetchDeployInfo('5MRJmpLeJbh3DdSErCncgv4uMUmCya2hKVfoShMzxieC')
+	// await fetchDeployInfo('HCwQcwp79e2BwcU1EQFYuX1BdmLPy9kjNeMmn1dcaCwm')
 	// set public key
 	// await set_contract_signer_public_key();
 
 	// set phase info
-	// await add_or_modify_phase_config(currentPhase);
+	await add_or_modify_phase_config(currentPhase);
+	// await toggle_contract_freeze()
 	// await set_current_phase(currentPhase);
+
+	// await set_contract_receiver(contractId, "0x17e20dae7cc09979265e6f6b6f86fd8e6c3dd53b96dc9b264cb68bda468aa50b")
 
 
 	// SET box info
-	// const boxPrice = 0
+	// const boxPrice = 1000
 	// const boxConfigId = await create_box_config(currentPhase, boxPrice);
 	// console.log({ boxConfigId });
 
 	// set metadata
-	const metadataList = await add_nft_item();
-	console.log(metadataList)
+	// const metadataList = await add_nft_item();
+	// console.log(metadataList)
 }
 
 main()
@@ -524,3 +570,5 @@ main()
     console.error(`error: ${error.stack}`);
     process.exit(1);
   });
+
+

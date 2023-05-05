@@ -77,10 +77,23 @@ async function test_mint() {
 	}
 }
 
+const queryPhaseConfig = async function () {
+	const address = await signer.getAddress();
+	const provider = new JsonRpcProvider(testnetConnection);
+
+	const { data } = await provider.getObject({
+		id: "0x0971c1164c43062441e0d128809d8dc2c33d50af1332e625200db3d159500370",
+		options: { showType: true, showContent: true },
+	});
+
+	return data
+};
+
 async function test_public_mint() {
 	try {
+		const mint_amount = 3, mint_price = 1000
 		const tx = new TransactionBlock();
-		const [coin] = tx.splitCoins(tx.gas, [tx.pure(1000)]);
+		const [coin] = tx.splitCoins(tx.gas, [tx.pure(mint_amount * mint_price)]);
 		const txn = await tx.moveCall({
 			target: `${packageId}::box_nft::buy_box`,
 			arguments: [
@@ -90,6 +103,7 @@ async function test_public_mint() {
 				tx.object(boxInfoId),
 				tx.object("0x6"),
 				tx.pure(mysteryBoxMintCap),
+				tx.pure(mint_amount),
 				coin,
 			],
 		});
