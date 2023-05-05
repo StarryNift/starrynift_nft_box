@@ -9,7 +9,7 @@ module starrynift_nft_box::box_nft {
     use ob_permissions::witness;
 
     use starrynift_nft_box::admin::{Contract, get_receiver, assert_not_freeze, get_signer_public_key};
-    use starrynift_nft_box::box_config::{BoxConfig, assert_box_same_phase, assert_can_open_box, get_box_name, get_box_description, get_box_img_url, get_box_price, assert_nonce_used, add_coupon_claim_record};
+    use starrynift_nft_box::box_config::{BoxConfig, assert_box_same_phase, assert_can_open_box, get_box_name, get_box_description, get_box_img_url, get_box_price, assert_nonce_used, add_coupon_claim_record, get_box_phase};
     use starrynift_nft_box::ecdsa::{assert_mint_signature_valid, assert_open_box_signature_valid};
     use starrynift_nft_box::nft_config::{NFTConfig, get_nft_id, Avatar, Space, Coupon, get_nft_avatar_attributes, get_nft_can_mint, get_nft_name, get_nft_description, get_nft_img_url, get_nft_space_attributes, get_nft_coupon_attributes, get_nft_coupon_amount};
     use starrynift_nft_box::phase_config::{Phase, assert_phase_in_progress, get_current_phase, get_phase_config, assert_can_public_mint};
@@ -86,14 +86,20 @@ module starrynift_nft_box::box_nft {
 
     struct BuyBoxNFTEvent has copy, drop {
         box_id: ID,
-        phase: u8,
+        box_phase: u8,
         buyer: address,
         box_price: u64,
     }
 
     struct OpenBoxNFTEvent has copy, drop {
         box_id: ID,
-        phase: u8,
+        box_phase: u8,
+        user: address,
+    }
+
+    struct ClaimCouponEvent has copy, drop {
+        coupon_id: ID,
+        box_phase: u8,
         user: address,
     }
 
@@ -302,7 +308,7 @@ module starrynift_nft_box::box_nft {
         event::emit(
             BuyBoxNFTEvent {
                 box_id: object::uid_to_inner(&box.id),
-                phase: get_current_phase(phase),
+                box_phase: get_current_phase(phase),
                 buyer: sender,
                 box_price: get_box_price(box_config),
             }
@@ -359,7 +365,7 @@ module starrynift_nft_box::box_nft {
         event::emit(
             BuyBoxNFTEvent {
                 box_id: object::uid_to_inner(&box.id),
-                phase: get_current_phase(phase),
+                box_phase: get_current_phase(phase),
                 buyer: sender,
                 box_price: get_box_price(box_config),
             }
@@ -431,7 +437,7 @@ module starrynift_nft_box::box_nft {
         event::emit(
             OpenBoxNFTEvent {
                 box_id: object::uid_to_inner(&mystery_box.id),
-                phase: mystery_box.phase,
+                box_phase: mystery_box.phase,
                 user: tx_context::sender(ctx),
             }
         );
@@ -463,8 +469,17 @@ module starrynift_nft_box::box_nft {
         let amount = get_nft_coupon_amount(&coupon.attributes);
 
         add_coupon_claim_record(
-            box_config, amount, sender
+            box_config, sender, amount
         );
+
+        event::emit(
+            ClaimCouponEvent {
+                coupon_id: object::uid_to_inner(&coupon.id),
+                box_phase: get_box_phase(box_config),
+                user: tx_context::sender(ctx),
+            }
+        );
+
         burn_coupon(coupon, mint_cap_coupon);
     }
 }
