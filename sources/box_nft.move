@@ -370,7 +370,7 @@ module starrynift_nft_box::box_nft {
         template2: &NFTConfig,
         template3: &NFTConfig,
         signature: vector<u8>,
-        mint_cap_box: &mut MintCap<MysteryBox>,
+        mint_cap_box: &MintCap<MysteryBox>,
         mint_cap_avatar: &mut MintCap<AvatarNFT>,
         mint_cap_space: &mut MintCap<SpaceNFT>,
         mint_cap_coupon: &mut MintCap<CouponNFT>,
@@ -440,7 +440,9 @@ module starrynift_nft_box::box_nft {
         phase: &Phase,
         coupon: CouponNFT,
         boxConfig: &mut BoxConfig,
-        ctx: &mut TxContext)
+        mint_cap_coupon: &MintCap<CouponNFT>,
+        ctx: &mut TxContext
+    )
     {
         let sender = tx_context::sender(ctx);
         let amount = get_nft_coupon_amount(&coupon.attributes);
@@ -452,7 +454,7 @@ module starrynift_nft_box::box_nft {
         add_coupon_claim_record(
             boxConfig, amount, sender
         );
-        burn_coupon(coupon);
+        burn_coupon(coupon, mint_cap_coupon);
     }
 
     public fun fundCoupon(
@@ -492,8 +494,19 @@ module starrynift_nft_box::box_nft {
         mint_nft(template1, mint_cap_avatar, mint_cap_space, mint_cap_coupon, ctx);
     }
 
-    public entry fun burn_coupon(coupon: CouponNFT) {
+    public entry fun burn_coupon(coupon: CouponNFT, mint_cap_coupon: &MintCap<CouponNFT>) {
+        let burn_guard = mint_event::start_burn(
+            witness::from_witness(Witness {}),
+            &coupon
+        );
+
         let CouponNFT { id, name: _, description: _, img_url: _, attributes: _ } = coupon;
-        object::delete(id)
+
+        // Burn user minted box
+        mint_event::emit_burn(
+            burn_guard,
+            mint_cap::collection_id(mint_cap_coupon),
+            id
+        );
     }
 }
