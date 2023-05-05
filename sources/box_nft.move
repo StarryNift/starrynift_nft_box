@@ -370,6 +370,7 @@ module starrynift_nft_box::box_nft {
         template2: &NFTConfig,
         template3: &NFTConfig,
         signature: vector<u8>,
+        mint_cap_box: &mut MintCap<MysteryBox>,
         mint_cap_avatar: &mut MintCap<AvatarNFT>,
         mint_cap_space: &mut MintCap<SpaceNFT>,
         mint_cap_coupon: &mut MintCap<CouponNFT>,
@@ -386,8 +387,6 @@ module starrynift_nft_box::box_nft {
             get_nft_id(template3),
             signature,
             get_signer_public_key(contract));
-
-        let MysteryBox { id, name: _, description: _, img_url: _, phase } = mystery_box;
 
         // Mint nft
         mint_nft(
@@ -414,14 +413,25 @@ module starrynift_nft_box::box_nft {
 
         event::emit(
             OpenBoxNFTEvent {
-                box_id: object::uid_to_inner(&id),
-                phase,
+                box_id: object::uid_to_inner(&mystery_box.id),
+                phase: mystery_box.phase,
                 user: tx_context::sender(ctx),
             }
         );
 
+        let burn_guard = mint_event::start_burn(
+            witness::from_witness(Witness {}),
+            &mystery_box
+        );
+
+        let MysteryBox { id, name: _, description: _, img_url: _, phase: _ } = mystery_box;
+
         // Burn user minted box
-        object::delete(id);
+        mint_event::emit_burn(
+            burn_guard,
+            mint_cap::collection_id(mint_cap_box),
+            id
+        );
 
         box_info.opened = box_info.opened + 1;
     }
