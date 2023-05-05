@@ -242,19 +242,19 @@ module starrynift_nft_box::box_nft {
         };
     }
 
-    public entry fun freemint(
-        template: &NFTConfig,
-        mint_cap_avatar: &mut MintCap<AvatarNFT>,
-        mint_cap_space: &mut MintCap<SpaceNFT>,
-        mint_cap_coupon: &mut MintCap<CouponNFT>,
-        ctx: &mut TxContext
-    ) {
-        mint_nft(
-            template,
-            mint_cap_avatar,
-            mint_cap_space,
-            mint_cap_coupon,
-            ctx
+    fun burn_coupon(coupon: CouponNFT, mint_cap_coupon: &MintCap<CouponNFT>) {
+        let burn_guard = mint_event::start_burn(
+            witness::from_witness(Witness {}),
+            &coupon
+        );
+
+        let CouponNFT { id, name: _, description: _, img_url: _, attributes: _ } = coupon;
+
+        // Burn user minted box
+        mint_event::emit_burn(
+            burn_guard,
+            mint_cap::collection_id(mint_cap_coupon),
+            id
         );
     }
 
@@ -450,66 +450,18 @@ module starrynift_nft_box::box_nft {
         box_info.opened = box_info.opened + 1;
     }
 
-    public entry fun claimCoupon(
-        phase: &Phase,
+    public entry fun claim_coupon(
         coupon: CouponNFT,
-        boxConfig: &mut BoxConfig,
+        box_config: &mut BoxConfig,
         mint_cap_coupon: &MintCap<CouponNFT>,
-        ctx: &mut TxContext
-    )
-    {
-        let sender = tx_context::sender(ctx);
-        let amount = get_nft_coupon_amount(&coupon.attributes);
-        let phaseIndex = get_current_phase(phase);
-
-        assert_box_same_phase(phaseIndex, boxConfig);
-
-        // check role
-        add_coupon_claim_record(
-            boxConfig, amount, sender
-        );
-        burn_coupon(coupon, mint_cap_coupon);
-    }
-
-    public fun fundCoupon(
-        phase: &Phase,
-        contract: &Contract,
-        boxConfig: &mut BoxConfig,
-        paid: Coin<SUI>,
-        reciever: address,
         ctx: &mut TxContext
     ) {
         let sender = tx_context::sender(ctx);
-        assert_admin(contract, ctx);
+        let amount = get_nft_coupon_amount(&coupon.attributes);
 
-        let phaseIndex = get_current_phase(phase);
-
-        assert_box_same_phase(phaseIndex, boxConfig);
-
-        let amount = get_user_claim_record(boxConfig, reciever);
-
-        assert!(amount == coin::value(&paid), EINSUFFIENT_PAID);
-
-        // check role
-        remove_coupon_claim_record(
-            boxConfig, sender
+        add_coupon_claim_record(
+            box_config, amount, sender
         );
-        transfer::public_transfer(paid, reciever);
-    }
-
-    public entry fun burn_coupon(coupon: CouponNFT, mint_cap_coupon: &MintCap<CouponNFT>) {
-        let burn_guard = mint_event::start_burn(
-            witness::from_witness(Witness {}),
-            &coupon
-        );
-
-        let CouponNFT { id, name: _, description: _, img_url: _, attributes: _ } = coupon;
-
-        // Burn user minted box
-        mint_event::emit_burn(
-            burn_guard,
-            mint_cap::collection_id(mint_cap_coupon),
-            id
-        );
+        burn_coupon(coupon, mint_cap_coupon);
     }
 }

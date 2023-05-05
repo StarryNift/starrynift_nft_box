@@ -171,11 +171,11 @@ module starrynift_nft_box::box_config {
         *table::borrow(&box_config.claimed_coupon, address)
     }
 
-    public entry fun add_coupon_claim_record(box_config: &mut BoxConfig, amount: u64, address: address) {
+    public fun add_coupon_claim_record(box_config: &mut BoxConfig, amount: u64, address: address) {
         table::add(&mut box_config.claimed_coupon, address, amount);
     }
 
-    public entry fun remove_coupon_claim_record(box_config: &mut BoxConfig, address: address) {
+    public fun remove_coupon_claim_record(box_config: &mut BoxConfig, address: address) {
         table::remove(&mut box_config.claimed_coupon, address);
     }
 }
