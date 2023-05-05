@@ -386,7 +386,7 @@ module starrynift_nft_box::box_nft {
             box_info.minted = box_info.minted + 1;
 
             transfer::transfer(box, sender);
-            i = i+1;
+            i = i + 1;
         }
     }
 
