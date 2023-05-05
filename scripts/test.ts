@@ -17,6 +17,7 @@ const keypair_ed25519 = Ed25519Keypair.deriveKeypair(
   MNEMONICS,
   DEFAULT_ED25519_DERIVATION_PATH
 );
+
 const signer = new RawSigner(keypair_ed25519, provider);
 const publicKey = keypair_ed25519.getPublicKey();
 const defaultGasBudget = 0.01 * 10 ** 9
@@ -56,6 +57,40 @@ async function test_mint() {
 					bcs.ser(['vector', BCS.U8],
 						Buffer.from(data.signature, 'hex')).toBytes()
 				),
+			],
+		});
+
+		const executedTx = await signer.signAndExecuteTransactionBlock({
+			transactionBlock: tx,
+			options: {
+				showInput: true,
+				showEffects: true,
+				showEvents: true,
+				showObjectChanges: true,
+			},
+		});
+		const { digest, transaction, effects, events, errors } = executedTx;
+		console.log(digest, transaction, effects, events);
+	} catch (err) {
+		console.log(err);
+		return null;
+	}
+}
+
+async function test_public_mint() {
+	try {
+		const tx = new TransactionBlock();
+		const [coin] = tx.splitCoins(tx.gas, [tx.pure(1000)]);
+		const txn = await tx.moveCall({
+			target: `${packageId}::box_nft::buy_box`,
+			arguments: [
+				tx.object(phaseId),
+				tx.object(contractId),
+				tx.object(boxConfigId),
+				tx.object(boxInfoId),
+				tx.object("0x6"),
+				tx.pure(mysteryBoxMintCap),
+				coin,
 			],
 		});
 
@@ -223,7 +258,8 @@ async function main() {
 	// 	'0x17e20dae7cc09979265e6f6b6f86fd8e6c3dd53b96dc9b264cb68bda468aa50b')
 
 	// await test_claim()
-	await test_freemint()
+	// await test_freemint()
+	await test_public_mint()
 }
 
 main()

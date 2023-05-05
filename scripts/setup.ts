@@ -29,7 +29,7 @@ interface PackageInfo {
 const packageId = process.env.PACKAGE_ID || "";
 const contractId = process.env.CONTRACT_ID || "";
 const phaseId = process.env.PHASE_ID || "";
-
+const currentPhase = 2
 
 async function set_contract_owner(contract: string, new_owner: string) {
   try {
@@ -56,7 +56,7 @@ async function set_contract_owner(contract: string, new_owner: string) {
   }
 }
 
-async function create_box_config(boxId: number) {
+async function create_box_config(currentPhase: number, boxPrice: number) {
   try {
     const tx = new TransactionBlock();
     tx.setGasBudget(defaultGasBudget);
@@ -66,7 +66,7 @@ async function create_box_config(boxId: number) {
         // contract ID
         tx.object(contractId),
         // phase
-        tx.pure(boxId, "u8"),
+        tx.pure(currentPhase, "u8"),
         // box_name
         tx.pure("AI ANIMO Mystery Box", "string"),
         // box_description
@@ -77,7 +77,7 @@ async function create_box_config(boxId: number) {
           "string"
         ),
         // box_price
-        tx.pure(0, "u64"),
+        tx.pure(boxPrice, "u64"),
         // open_time
         tx.pure(Math.ceil(new Date().getTime() / 1000), "u64"),
       ],
@@ -267,7 +267,7 @@ async function create_coupon_nft_config({
   }
 }
 
-async function add_or_modify_phase_config() {
+async function add_or_modify_phase_config(currentPhase: number) {
   try {
     const tx = new TransactionBlock();
     tx.setGasBudget(defaultGasBudget);
@@ -279,12 +279,12 @@ async function add_or_modify_phase_config() {
         // contract ID
         tx.object(contractId),
         // phaseId
-        tx.pure(1, "u8"),
+        tx.pure(currentPhase, "u8"),
         // allow_public_mint
         tx.pure(true, "bool"),
         // startTime
         tx.pure(0, "u64"),
-        tx.pure(Math.ceil(new Date().getTime() / 1000 + 86400 * 30), "u64"),
+        tx.pure(Math.ceil(new Date().getTime() / 1000 + 86400 * 7), "u64"),
       ],
     });
 
@@ -497,20 +497,21 @@ const queryPhaseConfig = async function () {
 async function main() {
 	const new_owner = await signer.getAddress();
 
-	await fetchDeployInfo('EfVCSFssDaSoxosHDn5NJ4iciAiPvDMdkKPx7GjFSyDt')
-
+	// await fetchDeployInfo('9evWHNEziVWZzSZgrPghGdkAsjYj1qRCK6EYbf6WzXTi')
+	//
 	// await set_contract_signer_public_key();
-	// await add_or_modify_phase_config();
-	// await set_current_phase(1);
+	// await add_or_modify_phase_config(currentPhase);
+	// await set_current_phase(currentPhase);
 	//
 
 	// boxid2 digest 9jZ4XrfautyBMYMAJapodT9cQqQSCFm396uy5S3TLc2p
 	// boxid2 boxid  0x3baadf5c7f760e18856019a5bd829cbc5ed40d17a43ecb1cb2e7fae9e2c74604
-	// const boxConfigId = await create_box_config(1);
-	// console.log({ boxConfigId });
+	const boxPrice = 1000
+	const boxConfigId = await create_box_config(currentPhase, boxPrice);
+	console.log({ boxConfigId });
 
-	const metadataList = await add_nft_item();
-	console.log(metadataList)
+	// const metadataList = await add_nft_item();
+	// console.log(metadataList)
 	// const metadataList = await add_nft_item();
 	// console.log(metadataList)
 }
