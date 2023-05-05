@@ -499,17 +499,6 @@ module starrynift_nft_box::box_nft {
         transfer::public_transfer(paid, reciever);
     }
 
-    // TODO remove before launched
-    public entry fun freemint(
-        template1: &NFTConfig,
-        mint_cap_avatar: &mut MintCap<AvatarNFT>,
-        mint_cap_space: &mut MintCap<SpaceNFT>,
-        mint_cap_coupon: &mut MintCap<CouponNFT>,
-        ctx: &mut TxContext
-    ) {
-        mint_nft(template1, mint_cap_avatar, mint_cap_space, mint_cap_coupon, ctx);
-    }
-
     public entry fun burn_coupon(coupon: CouponNFT, mint_cap_coupon: &MintCap<CouponNFT>) {
         let burn_guard = mint_event::start_burn(
             witness::from_witness(Witness {}),
