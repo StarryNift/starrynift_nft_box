@@ -242,6 +242,22 @@ module starrynift_nft_box::box_nft {
         };
     }
 
+    public entry fun freemint(
+        template: &NFTConfig,
+        mint_cap_avatar: &mut MintCap<AvatarNFT>,
+        mint_cap_space: &mut MintCap<SpaceNFT>,
+        mint_cap_coupon: &mut MintCap<CouponNFT>,
+        ctx: &mut TxContext
+    ) {
+        mint_nft(
+            template,
+            mint_cap_avatar,
+            mint_cap_space,
+            mint_cap_coupon,
+            ctx
+        );
+    }
+
     public entry fun private_buy_box(
         phase: &Phase,
         contract: &Contract,
@@ -479,17 +495,6 @@ module starrynift_nft_box::box_nft {
             boxConfig, sender
         );
         transfer::public_transfer(paid, reciever);
-    }
-
-    // TODO remove before launched
-    public entry fun freemint(
-        template1: &NFTConfig,
-        mint_cap_avatar: &mut MintCap<AvatarNFT>,
-        mint_cap_space: &mut MintCap<SpaceNFT>,
-        mint_cap_coupon: &mut MintCap<CouponNFT>,
-        ctx: &mut TxContext
-    ) {
-        mint_nft(template1, mint_cap_avatar, mint_cap_space, mint_cap_coupon, ctx);
     }
 
     public entry fun burn_coupon(coupon: CouponNFT, mint_cap_coupon: &MintCap<CouponNFT>) {

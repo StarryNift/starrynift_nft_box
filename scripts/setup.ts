@@ -464,7 +464,10 @@ async function fetchDeployInfo(digest: string) {
 	const contractId = objectChanges.find((item:any) => item.type === 'created' && item.objectType.includes('::Contract')).objectId
 	const upgradeCap = objectChanges.find((item:any) => item.type === 'created' && item.objectType.includes('::UpgradeCap')).objectId
 	const phaseId = objectChanges.find((item:any) => item.type === 'created' && item.objectType.includes('::Phase')).objectId
-
+	const avatarMintCap = objectChanges.find((item:any) => item.type === 'created' && /0x[0-9a-fA-F]+::mint_cap::MintCap<0x[0-9a-fA-F]+::box_nft::AvatarNFT>/.test(item.objectType)).objectId
+	const spaceMintCap = objectChanges.find((item:any) => item.type === 'created' && /0x[0-9a-fA-F]+::mint_cap::MintCap<0x[0-9a-fA-F]+::box_nft::SpaceNFT>/.test(item.objectType)).objectId
+	const couponMintCap = objectChanges.find((item:any) => item.type === 'created' && /0x[0-9a-fA-F]+::mint_cap::MintCap<0x[0-9a-fA-F]+::box_nft::CouponNFT>/.test(item.objectType)).objectId
+	const mysteryBoxCap = objectChanges.find((item:any) => item.type === 'created' && /0x[0-9a-fA-F]+::mint_cap::MintCap<0x[0-9a-fA-F]+::box_nft::MysteryBox>/.test(item.objectType)).objectId
 
 console.log(`
 PACKAGE_ID=${packageId}
@@ -472,6 +475,10 @@ COLLECTION_ID=${collectionId}
 CONTRACT_ID=${contractId}
 UPGRADE_CAP=${upgradeCap}
 PHASE_ID=${phaseId}
+AVATAR_MINT_CAP=${avatarMintCap}
+SPACE_MINT_CAP=${spaceMintCap}
+COUPON_MINT_CAP=${couponMintCap}
+MYSTERY_BOX_MINT_CAP=${mysteryBoxCap}
 `)
 }
 
@@ -490,17 +497,22 @@ const queryPhaseConfig = async function () {
 async function main() {
 	const new_owner = await signer.getAddress();
 
-	// await fetchDeployInfo('DQu9TSYdbVrxnCZVrQa5LAQmGf8tQYKXjNr1WF7G5pEu')
+	await fetchDeployInfo('EfVCSFssDaSoxosHDn5NJ4iciAiPvDMdkKPx7GjFSyDt')
 
 	// await set_contract_signer_public_key();
 	// await add_or_modify_phase_config();
 	// await set_current_phase(1);
+	//
 
+	// boxid2 digest 9jZ4XrfautyBMYMAJapodT9cQqQSCFm396uy5S3TLc2p
+	// boxid2 boxid  0x3baadf5c7f760e18856019a5bd829cbc5ed40d17a43ecb1cb2e7fae9e2c74604
 	// const boxConfigId = await create_box_config(1);
 	// console.log({ boxConfigId });
 
 	const metadataList = await add_nft_item();
 	console.log(metadataList)
+	// const metadataList = await add_nft_item();
+	// console.log(metadataList)
 }
 
 main()
