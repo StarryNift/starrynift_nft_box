@@ -17,7 +17,11 @@ module sui_nft_box::box_nft {
     use sui::transfer::public_transfer;
     use sui::package::receipt_cap;
 
+    // =================== Error =================
+
     const EINSUFFIENT_PAID: u64 = 1;
+
+    // =================== Struct =================
 
     struct MysteryBox has key, store {
         id: UID,
@@ -60,8 +64,8 @@ module sui_nft_box::box_nft {
     }
 
     public entry fun private_buy_box(
-        phase: &mut Phase,
-        contract: &mut Contract,
+        phase: &Phase,
+        contract: &Contract,
         box_config: &mut BoxConfig,
         box_info: &mut BoxInfo,
         clock: &Clock,
@@ -128,14 +132,10 @@ module sui_nft_box::box_nft {
         assert_can_public_mint(phase_config);
 
         let box_price = get_box_price(box_config);
-        if (box_price > 0) {
-            let paid_balance = coin::value(&paid);
-            assert!(box_price == paid_balance, EINSUFFIENT_PAID);
-            // Pay SUI to contract.receiver
-            transfer::public_transfer(paid, get_receiver(contract));
-        } else {
-            transfer::public_transfer(paid, get_receiver(contract));
-        };
+        let paid_balance = coin::value(&paid);
+        assert!(box_price == paid_balance, EINSUFFIENT_PAID);
+        // Pay SUI to contract.receiver
+        transfer::public_transfer(paid, get_receiver(contract));
 
         // Mint Box NFT to user
         let sender = tx_context::sender(ctx);
@@ -186,7 +186,6 @@ module sui_nft_box::box_nft {
             signature,
             get_signer_public_key(contract));
 
-        // Mint NFT by NFT combination list
         let MysteryBox { id, name: _, description: _, url: _, phase } = mystery_box;
 
         // Mint nft
