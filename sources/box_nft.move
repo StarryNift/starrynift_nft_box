@@ -4,16 +4,18 @@ module sui_nft_box::box_nft {
     use sui::clock::Clock;
     use sui::coin::{Self, Coin};
     use sui::event;
-    use sui::object::{Self, ID, UID, uid_as_inner};
+    use sui::object::{Self, ID, UID, uid_as_inner, id};
     use sui::sui::SUI;
     use sui::transfer;
     use sui::tx_context::{Self, TxContext};
     use sui::url::Url;
-    use sui_nft_box::admin::{Contract, get_receiver, assert_not_freeze, get_signer_public_key};
-    use sui_nft_box::box_config::{BoxConfig, assert_box_same_phase, assert_can_open_box, get_box_name, get_box_description, get_box_img_url, get_box_price, assert_nonce_used};
+    use sui_nft_box::admin::{Contract, get_receiver, assert_not_freeze, get_signer_public_key, assert_admin};
+    use sui_nft_box::box_config::{BoxConfig, assert_box_same_phase, assert_can_open_box, get_box_name, get_box_description, get_box_img_url, get_box_price, assert_nonce_used, add_coupon_claim_record, remove_coupon_claim_record, get_user_claim_record};
     use sui_nft_box::ecdsa::{assert_mint_signature_valid, assert_open_box_signature_valid};
-    use sui_nft_box::nft_config::{NFTConfig, mint_nft, get_nft_id};
+    use sui_nft_box::nft_config::{NFTConfig, mint_nft, get_nft_id, CouponNFT, burn_coupon, get_coupon_amount};
     use sui_nft_box::phase_config::{Phase, assert_phase_in_progress, get_current_phase, get_phase_config, assert_can_public_mint};
+    use sui::transfer::public_transfer;
+    use sui::package::receipt_cap;
 
     const EINSUFFIENT_PAID: u64 = 1;
 
@@ -204,5 +206,50 @@ module sui_nft_box::box_nft {
         object::delete(id);
 
         box_info.opened = box_info.opened + 1;
+    }
+
+    public entry fun claimCoupon(
+        phase: &Phase,
+        coupon: CouponNFT,
+        boxConfig: &mut BoxConfig,
+        ctx: &mut TxContext)
+    {
+        let sender = tx_context::sender(ctx);
+        let amount = get_coupon_amount(&coupon);
+        let phaseIndex = get_current_phase(phase);
+
+        assert_box_same_phase(phaseIndex, boxConfig);
+
+        // check role
+        add_coupon_claim_record(
+            boxConfig, amount, sender
+        );
+        burn_coupon(coupon);
+    }
+
+    public fun fundCoupon(
+        phase: &Phase,
+        contract: &Contract,
+        boxConfig: &mut BoxConfig,
+        paid: Coin<SUI>,
+        reciever: address,
+        ctx: &mut TxContext
+    ) {
+        let sender = tx_context::sender(ctx);
+        assert_admin(contract, ctx);
+
+        let phaseIndex = get_current_phase(phase);
+
+        assert_box_same_phase(phaseIndex, boxConfig);
+
+        let amount = get_user_claim_record(boxConfig, reciever);
+
+        assert!(amount == coin::value(&paid), EINSUFFIENT_PAID);
+
+        // check role
+        remove_coupon_claim_record(
+            boxConfig, sender
+        );
+        transfer::public_transfer(paid, reciever);
     }
 }

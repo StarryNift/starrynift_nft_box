@@ -35,6 +35,7 @@
   {
     "id": "0x8bc8d296e4a1663bb7871b62ad9a46901ba50abe176d376be29513576d577d13",
     "category": 2,
+    "sceneId": 20,
     "createdAt": "2023-05-01T11:59:17.127Z",
     "description": "A composable premium 3D Space in Starryverse featuring a visually stunning and immersive environment that incorporates elements of digital technology, futuristic aesthetics, and online social interaction, creating a unique and engaging experience for users.",
     "name": "Premium Cyber Space",
@@ -45,6 +46,7 @@
   {
     "id": "0x8bc8d296e4a1663bb7871b62ad9a46901ba50abe176d376be29513576d577d11",
     "category": 2,
+    "sceneId": 21,
     "createdAt": "2023-05-01T11:57:52.155Z",
     "description": " A composable 3D Space in Starryverse featuring breathtaking undersea scene thant transport users to a serene and vibrant underwater world filled with colorful coral reefs, exotic marine life, and stunning oceanic vistas, offering a mesmerizing and immersive experience.",
     "name": "Aqua World Space",
@@ -119,6 +121,7 @@
     "description": "An exceptionally talented golden monkey who was born in a mysterious cave and raised by a famous monkey king and an excellent monkey doctor. He upholds the values of loyalty, courage, and justice, and sees protecting his tribe as his mission.",
     "name": "Guardian Monkey Warrior",
     "rarity": "UR",
+    "image": "https://d1uoymq29mtp9f.cloudfront.net/web/img/sui/metadata/1_3_1.jpg",
     "updatedAt": "2023-05-01T11:51:43.479Z"
   },
   {
@@ -128,6 +131,7 @@
     "description": "A powerful but introverted wizard who often uses magic to do good deeds and is misunderstood by others due to his shy nature. He is mentored by Sedated Master Fox who reminds him of the responsibility that comes with great power.",
     "name": "Shy Wizard Kitty",
     "rarity": "SR",
+    "image": "https://d1uoymq29mtp9f.cloudfront.net/web/img/sui/metadata/1_2_1.jpg",
     "updatedAt": "2023-05-01T11:51:04.202Z"
   },
   {

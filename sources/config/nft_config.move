@@ -291,4 +291,9 @@ module sui_nft_box::nft_config {
 
         transfer::share_object(nft_config);
     }
+
+    public entry fun burn_coupon(coupon: CouponNFT) {
+        let CouponNFT { id, name: _, description: _, img_url: _, attributes: _  } = coupon;
+        object::delete(id)
+    }
 }
