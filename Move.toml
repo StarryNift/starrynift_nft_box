@@ -6,12 +6,11 @@ version = "0.0.0"
 [dependencies]
 # mainnet
 #Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "ae1212baf8f0837e25926d941db3d26a61c1bea2" }
-#NftProtocol = { git = "https://github.com/Origin-Byte/nft-protocol.git", subdir = "contracts/nft_protocol", rev = "main" }
+#NftProtocol = { git = "https://github.com/Origin-Byte/nft-protocol.git", subdir = "contracts/nft_protocol", rev = "develop" }
 
 # testnet
-Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "09b2081498366df936abae26eea4b2d5cafb2788" }
+Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "e4fe9f5ed5e240a718571f23bc75e12e60445288" }
 NftProtocol = { git = "https://github.com/Origin-Byte/nft-protocol.git", subdir = "contracts/nft_protocol", rev = "to-merge-to-main" }
 
 [addresses]
 starrynift_nft_box = "0x0"
-sui = "0000000000000000000000000000000000000000000000000000000000000002"

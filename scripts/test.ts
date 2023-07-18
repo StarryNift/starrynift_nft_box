@@ -9,7 +9,6 @@ import {
 import { bcs } from './bcsUtil'
 import {BCS} from "@mysten/bcs";
 require("dotenv").config();
-const nftMetadataList: any = require("../consts/Metadata.json");
 
 const MNEMONICS: string = process.env.MNEMONICS || "";
 const provider = new JsonRpcProvider(testnetConnection);
@@ -91,7 +90,14 @@ const queryPhaseConfig = async function () {
 
 async function test_public_mint() {
 	try {
-		const mint_amount = 3, mint_price = 1000
+		console.log({
+			phaseId,
+			contractId,
+			boxInfoId,
+			mysteryBoxMintCap,
+			boxConfigId: "0xc196d18bb1cd9502edcf3d487b61ed0ea1a8b5ac6537b9a1fb5caa39d181d367"
+		})
+		const mint_amount = 3, mint_price = 0.001 * 10**9
 		const tx = new TransactionBlock();
 		const [coin] = tx.splitCoins(tx.gas, [tx.pure(mint_amount * mint_price)]);
 		const txn = await tx.moveCall({
@@ -99,7 +105,7 @@ async function test_public_mint() {
 			arguments: [
 				tx.object(phaseId),
 				tx.object(contractId),
-				tx.object(boxConfigId),
+				tx.object('0xc196d18bb1cd9502edcf3d487b61ed0ea1a8b5ac6537b9a1fb5caa39d181d367'),
 				tx.object(boxInfoId),
 				tx.object("0x6"),
 				tx.pure(mysteryBoxMintCap),

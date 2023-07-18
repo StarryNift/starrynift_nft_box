@@ -23,3 +23,4 @@ build
 node_modules
 sui.log.*
 .env.mainnet
+.env.testnet

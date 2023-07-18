@@ -7,6 +7,7 @@
     "name": "1000 SUI Voucher",
     "rarity": "UR",
     "amount": 1000,
+    "assetId": "321",
     "image": "https://d1uoymq29mtp9f.cloudfront.net/web/img/sui/metadata/3_3_1.png",
     "updatedAt": "2023-05-01T12:01:07.745Z"
   },
@@ -18,6 +19,7 @@
     "name": "300 SUI Voucher",
     "amount": 300,
     "rarity": "SR",
+    "assetId": "321",
     "image": "https://d1uoymq29mtp9f.cloudfront.net/web/img/sui/metadata/3_2_1.png",
     "updatedAt": "2023-05-01T12:00:27.094Z"
   },
@@ -29,6 +31,7 @@
     "name": "25 SUI Voucher",
     "rarity": "R",
     "amount": 25,
+    "assetId": "311",
     "image": "https://d1uoymq29mtp9f.cloudfront.net/web/img/sui/metadata/3_1_1.png",
     "updatedAt": "2023-05-01T16:19:09.154Z"
   },
@@ -40,6 +43,7 @@
     "description": "A composable premium 3D Space in Starryverse featuring a visually stunning and immersive environment that incorporates elements of digital technology, futuristic aesthetics, and online social interaction, creating a unique and engaging experience for users.",
     "name": "Premium Cyber Space",
     "rarity": "UR",
+    "assetId": "231",
     "image": "https://d1uoymq29mtp9f.cloudfront.net/web/img/sui/metadata/2_3_1.png",
     "updatedAt": "2023-05-01T11:59:17.127Z"
   },
@@ -51,6 +55,7 @@
     "description": "A composable 3D Space in Starryverse featuring breathtaking undersea scene that transport users to a serene and vibrant underwater world filled with colorful coral reefs, exotic marine life, and stunning oceanic vistas, offering a mesmerizing and immersive experience.",
     "name": "Aqua World Space",
     "rarity": "R",
+    "assetId": "211",
     "image": "https://d1uoymq29mtp9f.cloudfront.net/web/img/sui/metadata/2_1_1.png",
     "updatedAt": "2023-05-01T11:57:52.155Z"
   },
@@ -61,6 +66,7 @@
     "description": "A meditation master in the ancient forest, who has deep knowledge of past and present lives and can communicate with the ancient ancestors of the forest through meditation.",
     "name": "Sedated Master Fox",
     "rarity": "UR",
+    "assetId": "132",
     "image": "https://d1uoymq29mtp9f.cloudfront.net/web/img/sui/metadata/1_3_2.png",
     "updatedAt": "2023-05-01T11:57:09.359Z"
   },
@@ -72,6 +78,7 @@
     "name": "Sea Bomb Sweeper",
     "image": "https://d1uoymq29mtp9f.cloudfront.net/web/img/sui/metadata/1_2_2.png",
     "rarity": "SR",
+    "assetId": "122",
     "updatedAt": "2023-05-01T11:56:35.120Z"
   },
   {
@@ -81,6 +88,7 @@
     "description": "A creative and passionate musician who loves psychedelic music and has the ability to manipulate the emotions and consciousness of his audience through his music. He produces beautiful dynamic patterns of light that change with the music, creating a mesmerizing visual effect.",
     "name": "Mutated DJ Water Nymph",
     "rarity": "R",
+    "assetId": "112",
     "image": "https://d1uoymq29mtp9f.cloudfront.net/web/img/sui/metadata/1_1_2.png",
     "updatedAt": "2023-05-01T11:56:04.726Z"
   },
@@ -91,6 +99,7 @@
     "description": "An exceptionally talented golden monkey who was born in a mysterious cave and raised by a famous monkey king and an excellent monkey doctor. He upholds the values of loyalty, courage, and justice, and sees protecting his tribe as his mission.",
     "name": "Guardian Monkey Warrior",
     "rarity": "UR",
+    "assetId": "131",
     "image": "https://d1uoymq29mtp9f.cloudfront.net/web/img/sui/metadata/1_3_1.png",
     "updatedAt": "2023-05-01T11:51:43.479Z"
   },
@@ -101,6 +110,7 @@
     "description": "A powerful but introverted wizard who often uses magic to do good deeds and is misunderstood by others due to his shy nature. He is mentored by Sedated Master Fox who reminds him of the responsibility that comes with great power.",
     "name": "Shy Wizard Kitty",
     "rarity": "SR",
+    "assetId": "121",
     "image": "https://d1uoymq29mtp9f.cloudfront.net/web/img/sui/metadata/1_2_1.png",
     "updatedAt": "2023-05-01T11:51:04.202Z"
   },
@@ -111,6 +121,7 @@
     "description": "A magical creature that appears lethargic but has the powerful ability to hypnotize and control the thoughts and behaviors of others through its famous \"Baby Shark\" song. However, it often uses its power to help those in need, rather than harm others.",
     "name": "Sleepy Baby Shark",
     "rarity": "R",
+    "assetId": "111",
     "image": "https://d1uoymq29mtp9f.cloudfront.net/web/img/sui/metadata/1_1_1.png",
     "updatedAt": "2023-05-01T11:48:30.789Z"
   }

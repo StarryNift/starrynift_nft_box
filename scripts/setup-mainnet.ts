@@ -1,30 +1,41 @@
 import {
 	Ed25519Keypair,
 	JsonRpcProvider,
-	devnetConnection,
 	RawSigner,
 	TransactionBlock,
-	testnetConnection, DEFAULT_ED25519_DERIVATION_PATH,
+	DEFAULT_ED25519_DERIVATION_PATH, Connection, testnetConnection,
 } from "@mysten/sui.js";
-import { bcs, serU82U8Vector } from './bcsUtil'
+import { bcs } from './bcsUtil'
 import {BCS} from "@mysten/bcs";
 require("dotenv").config();
-
-const nftMetadataList: any = require("../consts/Metadata.json");
+const { setTimeout: wait } = require("timers/promises");
+const nftMetadataList: any = require("../consts/Metadata3.json");
+const Network: string = process.env.NETWORK || "testnet";
 const MNEMONICS: string = process.env.MNEMONICS || "";
-const provider = new JsonRpcProvider(testnetConnection);
-const keypair_ed25519 = Ed25519Keypair.deriveKeypair(
+const SIGNER_MNEMONICS: string = process.env.SIGNER_MNEMONICS || "";
+const provider = new JsonRpcProvider(
+	Network === "testnet" ? testnetConnection :
+	new Connection({fullnode: 'https://explorer-rpc.mainnet.sui.io:443'}));
+
+const deployer_ed25519 = Ed25519Keypair.deriveKeypair(
   MNEMONICS,
   DEFAULT_ED25519_DERIVATION_PATH
 );
-const signer = new RawSigner(keypair_ed25519, provider);
-const publicKey = keypair_ed25519.getPublicKey();
+
+const signer_ed25519 = Ed25519Keypair.deriveKeypair(
+	SIGNER_MNEMONICS,
+	DEFAULT_ED25519_DERIVATION_PATH
+);
+
+const signer = new RawSigner(deployer_ed25519, provider);
+
+const signerPublicKey = signer_ed25519.getPublicKey();
 const defaultGasBudget = 0.01 * 10 ** 9
 
 const packageId = process.env.PACKAGE_ID || "";
 const contractId = process.env.CONTRACT_ID || "";
 const phaseId = process.env.PHASE_ID || "";
-const currentPhase = 1
+const currentPhase = Number(process.env.CURRENT_PHASE || "1")
 
 async function set_contract_owner(contract: string, new_owner: string) {
   try {
@@ -88,9 +99,9 @@ async function create_box_config(currentPhase: number, boxPrice: number) {
         // phase
         tx.pure(currentPhase, "u8"),
         // box_name
-        tx.pure("AI ANIMO Mystery Box", "string"),
+	      tx.pure("AI ANIMO: Episode 2", "string"),
         // box_description
-        tx.pure("The boxes come with varying rarity levels. By harnessing the unmatched scalability of the Sui Network for efficient transaction processing and storage. We have bundled three different assets - AI ANIMO characters, Starryverse 3D virtual spaces, and Sui token packages - into each box", "string"),
+	      tx.pure("The boxes come with varying rarity levels. By harnessing the unmatched scalability of the Sui Network for efficient transaction processing and storage. We have bundled three different assets - AI ANIMO characters, Starryverse 3D virtual spaces, and Sui token packages - into each box", "string"),
         // box_image
         tx.pure(
           "https://d1uoymq29mtp9f.cloudfront.net/web/img/sui-mysterybox.png",
@@ -125,16 +136,69 @@ async function create_box_config(currentPhase: number, boxPrice: number) {
   }
 }
 
+async function modify_box_config(boxConfigId: string, currentPhase: number, boxPrice: number) {
+	try {
+		const tx = new TransactionBlock();
+		tx.setGasBudget(defaultGasBudget);
+		tx.moveCall({
+			target: `${packageId}::box_config::modify_box_config`,
+			arguments: [
+				// boxConfigId
+				tx.object(boxConfigId),
+				// contract ID
+				tx.object(contractId),
+				// phase
+				tx.pure(currentPhase, "u8"),
+				// box_name
+				tx.pure("AI ANIMO: Episode 2", "string"),
+				// box_description
+				tx.pure("The boxes come with varying rarity levels. By harnessing the unmatched scalability of the Sui Network for efficient transaction processing and storage. We have bundled three different assets - AI ANIMO characters, Starryverse 3D virtual spaces, and Sui token packages - into each box", "string"),
+				// box_image
+				tx.pure(
+					"https://d1uoymq29mtp9f.cloudfront.net/web/img/sui-mysterybox.png",
+					"string"
+				),
+				// box_price
+				tx.pure(boxPrice, "u64"),
+				// open_time
+				tx.pure(Math.ceil(new Date().getTime() / 1000), "u64"),
+			],
+		});
+
+		const executedTx = await signer.signAndExecuteTransactionBlock({
+			transactionBlock: tx,
+			options: {
+				showInput: true,
+				showEffects: true,
+				showEvents: true,
+				showObjectChanges: true,
+			},
+		});
+
+		const { digest, transaction, effects, events, errors } = executedTx;
+		// console.log("box config", digest, transaction);
+		if (effects && effects.created && effects.created[0]) {
+			return effects.created[0].reference?.objectId;
+		}
+		return null;
+	} catch (err) {
+		console.log(err);
+		return null;
+	}
+}
+
 async function create_avatar_nft_config({
   name,
   description,
   image,
   canMint = true,
+	assetId = ''
 }: {
   name: string;
   description: string;
   image: string;
   canMint?: boolean;
+	assetId?: string;
 }) {
   try {
     const tx = new TransactionBlock();
@@ -153,7 +217,7 @@ async function create_avatar_nft_config({
         // can_mint
         tx.pure(canMint, "bool"),
         // asset_id
-        tx.pure("asset id", "string"),
+        tx.pure(assetId, "string"),
       ],
     });
 
@@ -287,7 +351,7 @@ async function create_coupon_nft_config({
   }
 }
 
-async function add_or_modify_phase_config(currentPhase: number) {
+async function add_or_modify_phase_config(currentPhase: number, allowPublicMint: boolean, startTime: number, endTime: number) {
   try {
     const tx = new TransactionBlock();
     tx.setGasBudget(defaultGasBudget);
@@ -301,10 +365,12 @@ async function add_or_modify_phase_config(currentPhase: number) {
         // phaseId
         tx.pure(currentPhase, "u8"),
         // allow_public_mint
-        tx.pure(true, "bool"),
+        tx.pure(allowPublicMint, "bool"),
         // startTime
-        tx.pure(Math.ceil(new Date().getTime() / 1000), "u64"),
-        tx.pure(Math.ceil(new Date().getTime() / 1000) + 3600, "u64"),
+	      // tx.pure(0, "u64"),
+        tx.pure(startTime, "u64"),
+	      // endTime
+        tx.pure(endTime, "u64"),
       ],
     });
 
@@ -373,7 +439,7 @@ async function set_contract_signer_public_key() {
       arguments: [
         // contract ID
         tx.object(contractId),
-	      tx.pure(bcs.ser(['vector', BCS.U8], publicKey.toBytes()).toBytes())
+	      tx.pure(bcs.ser(['vector', BCS.U8], signerPublicKey.toBytes()).toBytes())
       ],
     });
 
@@ -445,7 +511,8 @@ async function add_nft_item() {
 
 	let metadataList = []
 
-  for (let { name, category, description, amount, rarity, sceneId, image } of nftMetadataList) {
+  for (let { name, category, description, amount, rarity, assetId, sceneId, image } of nftMetadataList) {
+		await wait(3000)
     switch (category) {
       case 1: // avatar
         {
@@ -453,6 +520,7 @@ async function add_nft_item() {
             name,
             description,
             image,
+	          assetId,
           });
 	        metadataList.push({ name, objectId, category, rarity });
 					console.log(JSON.stringify(metadataList))
@@ -540,28 +608,35 @@ BOX_INFO_ID=${boxInfoId}
 }
 
 async function main() {
-	const new_owner = await signer.getAddress();
+	const ownerAddress = await signer.getAddress();
+	console.log(ownerAddress)
 
-	// await fetchDeployInfo('HCwQcwp79e2BwcU1EQFYuX1BdmLPy9kjNeMmn1dcaCwm')
+	// await fetchDeployInfo('DaSA7ZBEQDeGmYqcQ35R6ziqqPePSTiczCcBznweQToD')
 	// set public key
 	// await set_contract_signer_public_key();
+	// await wait(3000)
+	//
+	// // set phase info
+	const startTime = Math.floor(new Date('2023-05-10 17:00:00').getTime() / 1000)
+	const endTime = startTime + 86400 * 10000
+	// await add_or_modify_phase_config(2, true, startTime, endTime);
 
-	// set phase info
-	await add_or_modify_phase_config(currentPhase);
-	// await toggle_contract_freeze()
-	// await set_current_phase(currentPhase);
+	// await wait(3000)
+	// 		//	// await toggle_contract_freeze()
+	// await set_current_phase(2);
 
-	// await set_contract_receiver(contractId, "0x17e20dae7cc09979265e6f6b6f86fd8e6c3dd53b96dc9b264cb68bda468aa50b")
+	// await set_contract_receiver(contractId, "0x8b938dd4518b4a3a9f7c4012fdb9e02c5b63609b08cccf513e930b1a71eb9de4")
 
 
 	// SET box info
-	// const boxPrice = 1000
-	// const boxConfigId = await create_box_config(currentPhase, boxPrice);
+	// const boxPrice = 20 * 10**9
+	// const boxConfigId = await create_box_config(2, boxPrice);
+	// await modify_box_config('0x501d53e8e247664c4392f84a530ebcfc666e30c43aa589803ce7509c87330661', 2, boxPrice);
 	// console.log({ boxConfigId });
 
 	// set metadata
-	// const metadataList = await add_nft_item();
-	// console.log(metadataList)
+	const metadataList = await add_nft_item();
+	console.log(metadataList)
 }
 
 main()
